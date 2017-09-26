@@ -16,8 +16,17 @@ import (
 
 func getToken() string {
 	buf := bytes.NewBuffer(nil)
-	f, _ := os.Open("token") // Error handling elided for brevity.
-	io.Copy(buf, f)          // Error handling elided for brevity.
+	f, err := os.Open("token") // Error handling elided for brevity.
+	if err != nil {
+		fmt.Println("Could not open token file")
+		os.Exit(1)
+	}
+	_, err = io.Copy(buf, f) // Error handling elided for brevity.
+	if err != nil {
+		fmt.Println(err)
+		f.Close()
+		os.Exit(1)
+	}
 	f.Close()
 	s := string(buf.Bytes())
 
@@ -47,10 +56,9 @@ func main() {
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
-
+	// if m.Author.ID == s.State.User.ID {
+	// 	return
+	// }
 	sender := sender.NewSender(s, m)
 
 	if strings.HasPrefix(m.Content, "!say") {
