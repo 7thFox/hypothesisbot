@@ -9,6 +9,7 @@ type Sender struct {
 	session   *discordgo.Session
 	channelid string
 	user      *discordgo.User
+	msgid     string
 }
 
 func NewSender(s *discordgo.Session, m *discordgo.MessageCreate) *Sender {
@@ -17,6 +18,7 @@ func NewSender(s *discordgo.Session, m *discordgo.MessageCreate) *Sender {
 	this.session = s
 	this.channelid = m.ChannelID
 	this.user = m.Author
+	this.msgid = m.ID
 
 	return this
 }

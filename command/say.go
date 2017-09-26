@@ -10,6 +10,7 @@ type Say struct {
 }
 
 func (sy Say) Execute(s sender.Sender) error {
+	s.DeleteCommand()
 	return s.Say(sy.msg)
 }
 
