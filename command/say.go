@@ -1,15 +1,16 @@
 package command
 
 import (
-	"hypothesisbot/sender"
+	"github.com/7thFox/hypothesisbot/sender"
 )
 
+// Say repeats text back into chat
 type Say struct {
-    msg string
+	msg string
 }
 
-func (this Say) Execute(s sender.Sender) error {
-	return s.Say(this.msg)
+func (sy Say) Execute(s sender.Sender) error {
+	return s.Say(sy.msg)
 }
 
 func NewSay(s string) *Say {

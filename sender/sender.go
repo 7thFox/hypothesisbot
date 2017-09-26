@@ -4,13 +4,14 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// Sender is an object for basic replies in channels
 type Sender struct {
-    session *discordgo.Session
-    channelid string
-    user *discordgo.User
+	session   *discordgo.Session
+	channelid string
+	user      *discordgo.User
 }
 
-func NewSender(s *discordgo.Session, m *discordgo.MessageCreate) *Sender{
+func NewSender(s *discordgo.Session, m *discordgo.MessageCreate) *Sender {
 	this := new(Sender)
 
 	this.session = s

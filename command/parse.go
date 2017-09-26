@@ -1,14 +1,16 @@
 package command
 
 import (
-	"github.com/bwmarrin/discordgo"
 	"strings"
+
+	"github.com/bwmarrin/discordgo"
 )
 
-const PREFIX = "!"
+const prefix = "!"
 
+// ParseCommand creates a Command object based on the message sent
 func ParseCommand(m *discordgo.MessageCreate) (*Command, error) {
 	cmd := new(Command)
-	*cmd = NewSay(strings.Replace(m.Content, PREFIX+"say", "", 1))
+	*cmd = NewSay(strings.Replace(m.Content, prefix+"say ", "", 1))
 	return cmd, nil
 }
