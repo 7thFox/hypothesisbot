@@ -1,8 +1,6 @@
 package command
 
 import (
-	"fmt"
-
 	"github.com/7thFox/hypothesisbot/sender"
 )
 
@@ -11,7 +9,6 @@ type Test struct {
 }
 
 func (t Test) Execute(s sender.Sender) error {
-	fmt.Println("exec")
 	return s.Say("Hello World!")
 }
 

@@ -2,7 +2,6 @@ package command
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -12,16 +11,11 @@ const prefix = "!"
 
 // ParseCommand creates a Command object based on the message sent
 func ParseCommand(m *discordgo.MessageCreate) (*Command, error) {
-	// cmd := new(Command)
 	var cmd Command
 
-	fmt.Println("parse")
-
 	if isCommand(m, "say") {
-		fmt.Println("say")
 		cmd = NewSay(stripCommand(m, "say"))
 	} else if isCommand(m, "test") {
-		fmt.Println("test")
 		cmd = NewTest()
 	}
 
