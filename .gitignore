@@ -14,3 +14,4 @@
 .glide/
 token
 main
+.vscode/*

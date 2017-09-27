@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"github.com/7thFox/hypothesisbot/command"
@@ -59,8 +58,8 @@ func main() {
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	sender := sender.NewSender(s, m)
 
-	if strings.HasPrefix(m.Content, "!say ") {
-		cmd, _ := command.ParseCommand(m)
+	cmd, _ := command.ParseCommand(m)
+	if cmd != nil {
 		(*cmd).Execute(*sender)
 	}
 }
