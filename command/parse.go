@@ -17,6 +17,8 @@ func ParseCommand(m *discordgo.MessageCreate) (*Command, error) {
 		cmd = NewSay(stripCommand(m, "say"))
 	} else if isCommand(m, "test") {
 		cmd = NewTest()
+	} else if isCommand(m, "countdown") {
+		// cmd = NewCountdown()
 	}
 
 	if cmd != nil {
