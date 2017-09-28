@@ -11,7 +11,7 @@ func (t Git) Execute(s sender.Sender) error {
 	return s.Say("Source code can be found at https://github.com/7thFox/hypothesisbot")
 }
 
-func NewGit() *Git {
+func NewGit(args string) *Git {
 	this := new(Git)
 	return this
 }

@@ -22,7 +22,7 @@ func (c Doot) Execute(s sender.Sender) error {
 	return nil
 }
 
-func NewDoot() *Doot {
+func NewDoot(args string) *Doot {
 	this := new(Doot)
 	return this
 }

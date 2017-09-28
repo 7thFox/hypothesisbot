@@ -12,7 +12,7 @@ func (t Test) Execute(s sender.Sender) error {
 	return s.Say("Hello World!")
 }
 
-func NewTest() *Test {
+func NewTest(args string) *Test {
 	this := new(Test)
 	return this
 }

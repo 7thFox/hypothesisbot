@@ -26,7 +26,7 @@ func (c Countdown) Execute(s sender.Sender) error {
 	return nil
 }
 
-func NewCountdown() *Countdown {
+func NewCountdown(args string) *Countdown {
 	this := new(Countdown)
 	return this
 }

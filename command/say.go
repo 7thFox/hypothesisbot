@@ -14,8 +14,8 @@ func (sy Say) Execute(s sender.Sender) error {
 	return s.Say(sy.msg)
 }
 
-func NewSay(s string) *Say {
+func NewSay(args string) *Say {
 	this := new(Say)
-	this.msg = s
+	this.msg = args
 	return this
 }

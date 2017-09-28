@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -14,9 +15,26 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+var debugMode = flag.Bool("debug", false, "run in debug mode with debug settings")
+
+func tokenFilename() string {
+	if *debugMode {
+		return "token.debug"
+	}
+	return "token"
+}
+
+func prefix() string {
+	if *debugMode {
+		return "!!"
+	}
+	return "!"
+}
+
 func getToken() string {
+
 	buf := bytes.NewBuffer(nil)
-	f, err := os.Open("token")
+	f, err := os.Open(tokenFilename())
 	if err != nil {
 		fmt.Println("Could not open token file")
 		os.Exit(1)
@@ -34,6 +52,11 @@ func getToken() string {
 }
 
 func main() {
+	flag.Parse()
+	if *debugMode {
+		fmt.Println("Debug Mode")
+	}
+
 	discord, err := discordgo.New("Bot " + getToken()) // No more pushing code with my token
 	if err != nil {
 		fmt.Println("Err ", err)
@@ -58,7 +81,7 @@ func main() {
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	sender := sender.NewSender(s, m)
 
-	cmd, _ := command.ParseCommand(m)
+	cmd, _ := command.ParseCommand(m, prefix(), *debugMode)
 	if cmd != nil {
 		(*cmd).Execute(*sender)
 	}

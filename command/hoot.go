@@ -22,7 +22,7 @@ func (c Hoot) Execute(s sender.Sender) error {
 	return nil
 }
 
-func NewHoot() *Hoot {
+func NewHoot(args string) *Hoot {
 	this := new(Hoot)
 	return this
 }

@@ -7,38 +7,42 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const prefix = "!"
-
 // ParseCommand creates a Command object based on the message sent
-func ParseCommand(m *discordgo.MessageCreate) (*Command, error) {
+// debug: weather to include experimental commands
+func ParseCommand(m *discordgo.MessageCreate, prefix string, debug bool) (*Command, error) {
 	var cmd Command
+	var cmdStr string
+	argStr := ""
 
-	if isCommand(m, "say") {
-		cmd = NewSay(stripCommand(m, "say"))
-	} else if isCommand(m, "test") {
-		cmd = NewTest()
-	} else if isCommand(m, "countdown") {
-		// cmd = NewCountdown()
-	} else if isCommand(m, "doot") {
-		cmd = NewDoot()
-	} else if isCommand(m, "hoot") {
-		cmd = NewHoot()
-	} else if isCommand(m, "noot") {
-		cmd = NewNoot()
-	} else if isCommand(m, "git") {
-		cmd = NewGit()
+	s := strings.SplitN(m.Content, " ", 2)
+	cmdStr = s[0]
+
+	if !strings.HasPrefix(cmdStr, prefix) {
+		return nil, errors.New("Not a command message")
+	}
+
+	if len(s) > 1 {
+		argStr = s[1]
+	}
+
+	if cmdStr == prefix+"say" {
+		cmd = NewSay(argStr)
+	} else if cmdStr == prefix+"test" {
+		cmd = NewTest(argStr)
+	} else if cmdStr == prefix+"countdown" {
+		// cmd = NewCountdown(argStr)
+	} else if cmdStr == prefix+"doot" {
+		cmd = NewDoot(argStr)
+	} else if cmdStr == prefix+"hoot" {
+		cmd = NewHoot(argStr)
+	} else if cmdStr == prefix+"noot" {
+		cmd = NewNoot(argStr)
+	} else if cmdStr == prefix+"git" {
+		cmd = NewGit(argStr)
 	}
 
 	if cmd != nil {
 		return &cmd, nil
 	}
 	return nil, errors.New("Not a command message")
-}
-
-func isCommand(m *discordgo.MessageCreate, c string) bool {
-	return strings.HasPrefix(m.Content, prefix+c)
-}
-
-func stripCommand(m *discordgo.MessageCreate, c string) string {
-	return strings.TrimSpace(strings.TrimPrefix(m.Content, prefix+c))
 }
