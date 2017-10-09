@@ -5,13 +5,14 @@ import (
 	"time"
 
 	"github.com/7thFox/hypothesisbot/sender"
+	"github.com/bwmarrin/discordgo"
 )
 
 // Countdown updates the message counting down from a number
 type Countdown struct {
 }
 
-func (c Countdown) Execute(s sender.Sender) error {
+func (c Countdown) Execute(s sender.Sender, d *discordgo.Session) error {
 	msg := make(chan string, 10)
 	exit := make(chan int)
 	go s.Update(msg, exit)

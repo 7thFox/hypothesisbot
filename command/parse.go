@@ -39,6 +39,8 @@ func ParseCommand(m *discordgo.MessageCreate, prefix string, debug bool) (*Comma
 		cmd = NewNoot(argStr)
 	} else if cmdStr == prefix+"git" {
 		cmd = NewGit(argStr)
+	} else if cmdStr == prefix+"kill" {
+		cmd = NewKill(argStr)
 	}
 
 	if cmd != nil {

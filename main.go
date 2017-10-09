@@ -83,6 +83,6 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	cmd, _ := command.ParseCommand(m, prefix(), *debugMode)
 	if cmd != nil {
-		(*cmd).Execute(*sender)
+		(*cmd).Execute(*sender, s)
 	}
 }
