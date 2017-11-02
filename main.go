@@ -16,6 +16,7 @@ import (
 
 var debugMode = flag.Bool("debug", false, "run in debug mode with debug settings")
 var configPath = "./config.json"
+var cfg *config.Config
 
 func prefix() string {
 	if *debugMode {
@@ -30,7 +31,7 @@ func main() {
 		fmt.Println("Debug Mode")
 	}
 
-	cfg := config.NewConfig(configPath, *debugMode)
+	cfg = config.NewConfig(configPath, *debugMode)
 
 	discord, err := discordgo.New("Bot " + cfg.Token()) // No more pushing code with my token
 	if err != nil {
@@ -55,6 +56,7 @@ func main() {
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	sender := sender.NewSender(s, m)
+	cfg.Database().LogMessage(m)
 
 	cmd, _ := command.ParseCommand(m, prefix(), *debugMode)
 	if cmd != nil {

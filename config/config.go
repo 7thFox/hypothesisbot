@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/7thFox/hypothesisbot/database"
 )
 
 type Config struct {
 	json configJSON
 
+	db    database.Database
 	Debug bool
 	token string
 }
@@ -19,7 +22,7 @@ type configJSON struct {
 		Database  struct {
 			Dbtype   string `json:"type"`
 			Location string `json:"location"`
-		}
+		} `json:"db"`
 	} `json:"global"`
 	Debug struct {
 		TokenPath string `json:"token"`
@@ -27,7 +30,7 @@ type configJSON struct {
 			CopyProduction bool   `json:"copyprod"`
 			Dbtype         string `json:"type"`
 			Location       string `json:"location"`
-		}
+		} `json:"db"`
 	} `json:"debug"`
 }
 
@@ -41,5 +44,6 @@ func NewConfig(path string, d bool) *Config {
 	jsonParser.Decode(&(cfg.json))
 
 	cfg.Debug = d
+
 	return &cfg
 }
