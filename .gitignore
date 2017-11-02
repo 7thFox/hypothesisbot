@@ -16,3 +16,5 @@ token
 main
 .vscode/*
 token.debug
+db.debug
+db
