@@ -1,0 +1,17 @@
+{
+    "global": {
+        "token": "./token",
+        "db": {
+            "type": "sqlite",
+            "location": "./db"
+        }
+    }, 
+    "debug": {
+        "token": "./token.debug",
+        "db": {
+            "type": "sqlite",
+            "location": "./db.debug",
+            "copyprod": false
+        }
+    }
+}

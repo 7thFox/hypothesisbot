@@ -1,28 +1,21 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/7thFox/hypothesisbot/command"
+	"github.com/7thFox/hypothesisbot/config"
 	"github.com/7thFox/hypothesisbot/sender"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 var debugMode = flag.Bool("debug", false, "run in debug mode with debug settings")
-
-func tokenFilename() string {
-	if *debugMode {
-		return "token.debug"
-	}
-	return "token"
-}
+var configPath = "./config.json"
 
 func prefix() string {
 	if *debugMode {
@@ -31,33 +24,15 @@ func prefix() string {
 	return "!"
 }
 
-func getToken() string {
-
-	buf := bytes.NewBuffer(nil)
-	f, err := os.Open(tokenFilename())
-	if err != nil {
-		fmt.Println("Could not open token file")
-		os.Exit(1)
-	}
-	_, err = io.Copy(buf, f)
-	if err != nil {
-		fmt.Println(err)
-		f.Close()
-		os.Exit(1)
-	}
-	f.Close()
-	s := string(buf.Bytes())
-
-	return s
-}
-
 func main() {
 	flag.Parse()
 	if *debugMode {
 		fmt.Println("Debug Mode")
 	}
 
-	discord, err := discordgo.New("Bot " + getToken()) // No more pushing code with my token
+	cfg := config.NewConfig(configPath, *debugMode)
+
+	discord, err := discordgo.New("Bot " + cfg.Token()) // No more pushing code with my token
 	if err != nil {
 		fmt.Println("Err ", err)
 		return
