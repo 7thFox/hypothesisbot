@@ -20,8 +20,8 @@ type configJSON struct {
 	Global struct {
 		TokenPath string `json:"token"`
 		Database  struct {
-			Dbtype   string `json:"type"`
-			Location string `json:"location"`
+			Dbtype string `json:"type"`
+			Host   string `json:"host"`
 		} `json:"db"`
 	} `json:"global"`
 	Debug struct {
@@ -29,7 +29,7 @@ type configJSON struct {
 		Database  struct {
 			CopyProduction bool   `json:"copyprod"`
 			Dbtype         string `json:"type"`
-			Location       string `json:"location"`
+			Host           string `json:"host"`
 		} `json:"db"`
 	} `json:"debug"`
 }

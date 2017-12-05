@@ -2,15 +2,15 @@
     "global": {
         "token": "./token",
         "db": {
-            "type": "sqlite",
-            "location": "./db"
+            "type": "mongo",
+            "host": "localhost"
         }
     }, 
     "debug": {
         "token": "./token.debug",
         "db": {
-            "type": "sqlite",
-            "location": "./db.debug",
+            "type": "mongo",
+            "host": "localhost",
             "copyprod": false
         }
     }

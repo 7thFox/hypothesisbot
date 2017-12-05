@@ -42,6 +42,7 @@ func (t Kill) Execute(s sender.Sender, d *discordgo.Session) error {
 			"Good afternoon, gentlemen. I am a HAL 9000 computer. I became operational at the H.A.L. plant in Urbana, Illinois on the 12th of January 1992. My instructor was Mr. Langley, and he taught me to sing a song. If you'd like to hear it, I could sing it for you.",
 		}
 		s.Say(msgs[rand.Int()%len(msgs)])
+		s.LogUser("Attempted bot kill")
 		return errors.New("Permssion Denied: Not Bot Owner")
 	}
 	s.Say(":skull:")

@@ -3,17 +3,18 @@ package database
 import (
 	"errors"
 
-	"github.com/7thFox/hypothesisbot/database/sqlite"
+	"github.com/7thFox/hypothesisbot/database/mongo"
 	"github.com/bwmarrin/discordgo"
 )
 
 type Database interface {
-	LogMessage(m *discordgo.MessageCreate)
+	LogMessage(m *discordgo.Message) error
+	IsLogged(mid string) bool
 }
 
-func NewDatabase(t string, l string) (interface{}, error) {
-	if t == "sqlite" {
-		return sqlite.NewSqlite(l), nil
+func NewDatabase(t string, host string) (interface{}, error) {
+	if t == "mongo" {
+		return mongo.NewMongo(host)
 	}
 	return nil, errors.New("Unsupported Database type")
 }

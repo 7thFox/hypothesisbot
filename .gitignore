@@ -17,4 +17,7 @@ main
 .vscode/*
 token.debug
 db.debug
-db
+db.sqlite3
+db.debug.sqlite3
+db.debug.sqlite3-journal
+db.sqlite3-journal

@@ -8,7 +8,7 @@ import (
 
 func (c *Config) Database() database.Database {
 	if c.db == nil {
-		db, err := database.NewDatabase(c.dbType(), c.dbLocation())
+		db, err := database.NewDatabase(c.dbType(), c.dbHost())
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -23,9 +23,9 @@ func (c *Config) dbType() string {
 	}
 	return c.json.Global.Database.Dbtype
 }
-func (c *Config) dbLocation() string {
-	if c.Debug && c.json.Debug.Database.Location != "" {
-		return c.json.Debug.Database.Location
+func (c *Config) dbHost() string {
+	if c.Debug && c.json.Debug.Database.Host != "" {
+		return c.json.Debug.Database.Host
 	}
-	return c.json.Global.Database.Location
+	return c.json.Global.Database.Host
 }
