@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"os/signal"
 	"strings"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/7thFox/hypothesisbot/command"
 	"github.com/7thFox/hypothesisbot/config"
+	"github.com/7thFox/hypothesisbot/log"
 	"github.com/7thFox/hypothesisbot/sender"
 
 	"github.com/bwmarrin/discordgo"
@@ -21,28 +21,29 @@ var slog = flag.String("slog", "", "log all channels of given server")
 var configPath = flag.String("config", "./config.json", "set location of config file")
 
 var cfg *config.Config
+var lgr log.Logger
 
 func main() {
+	lgr = log.NewConsoleLogger()
 	flag.Parse()
 	if *debugMode {
-		fmt.Println("Debug Mode")
+		lgr.Log("Debug Mode")
 	}
 
 	cfg = config.NewConfig(*configPath, *debugMode)
 
 	discord, err := discordgo.New("Bot " + cfg.Token()) // No more pushing code with my token
 	if err != nil {
-		fmt.Println("Err ", err)
+		lgr.Log(err.Error())
 		return
 	}
 
-	fmt.Println("connected")
+	lgr.Log("Connected")
 
 	if *slog != "" {
-		fmt.Println("Server Log Mode enabled: Logging...")
-		//138977883036188672
+		lgr.Log("Server Log Mode enabled: Logging...")
 		logServer(*slog, discord)
-		fmt.Println("Finished Logging Server")
+		lgr.Log("Finished Logging Server")
 		discord.Close()
 		os.Exit(0)
 	} else {
@@ -52,10 +53,11 @@ func main() {
 	discord.AddHandler(messageHandler)
 
 	if err = discord.Open(); err != nil {
-		fmt.Println("Err ", err)
+		lgr.Log(err.Error())
 		return
 	}
 
+	lgr.Log("Finished startup")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
@@ -65,9 +67,7 @@ func main() {
 
 func logServer(s string, d *discordgo.Session) {
 	chans, _ := d.GuildChannels(s)
-	fmt.Println("")
 	for _, ch := range chans {
-		// fmt.Printf("\rLogging %s: %s                \n", ch.ID, ch.Name)
 		logChannelFull(ch.ID, d)
 	}
 }
@@ -82,10 +82,8 @@ func logChannelNew(ch string, d *discordgo.Session) {
 				break
 			}
 			if !cfg.Database().IsLogged(m.ID) {
-				// fmt.Printf("\rLogging ID %s: %s   ", m.ID, m.Timestamp)
 				cfg.Database().LogMessage(m)
 			} else {
-				// fmt.Printf("\rNot Logged: %s   ", m.ID)
 			}
 		}
 		if strings.Compare(lastMsg, new.ID) < 0 {
@@ -102,17 +100,15 @@ func logChannelOld(ch string, d *discordgo.Session) {
 		for _, m := range msgs {
 			lastMsg = m.ID
 			if !cfg.Database().IsLogged(m.ID) {
-				// fmt.Printf("\rLogging ID %s: %s   ", m.ID, m.Timestamp)
 				cfg.Database().LogMessage(m)
 			} else {
-				// fmt.Printf("\rNot Logged: %s   ", m.ID)
 			}
 		}
 	}
 }
 
 func logServerFast(d *discordgo.Session) {
-	fmt.Printf("Logging new messages")
+	lgr.LogState("Logging new messages")
 	newMsgs, _ := cfg.Database().NewestMessages()
 
 	for _, s := range cfg.LogServers() {
@@ -123,7 +119,7 @@ func logServerFast(d *discordgo.Session) {
 			}
 		}
 	}
-	fmt.Println("\rFinished Scanning channels    ")
+	lgr.Log("Finished scanning channels")
 }
 
 func logChannelFull(ch string, d *discordgo.Session) {
