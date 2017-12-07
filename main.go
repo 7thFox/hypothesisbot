@@ -52,6 +52,8 @@ func main() {
 		fmt.Println("Finished Logging Server")
 		discord.Close()
 		os.Exit(0)
+	} else {
+		logServerFast(discord)
 	}
 
 	discord.AddHandler(messageHandler)
@@ -72,16 +74,14 @@ func logServer(s string, d *discordgo.Session) {
 	chans, _ := d.GuildChannels(s)
 	fmt.Println("")
 	for _, ch := range chans {
-		fmt.Printf("\rLogging %s: %s                \n", ch.ID, ch.Name)
-		logChannel(ch.ID, d)
+		// fmt.Printf("\rLogging %s: %s                \n", ch.ID, ch.Name)
+		logChannelFull(ch.ID, d)
 	}
 }
 
-func logChannel(ch string, d *discordgo.Session) {
+func logChannelNew(ch string, d *discordgo.Session) {
 	lastMsg := ""
-	old, _ := cfg.Database().OldestMessageInChannel(ch)
 	new, _ := cfg.Database().NewestMessageInChannel(ch)
-
 	for msgs, err := d.ChannelMessages(ch, 100, "", "", ""); err == nil && len(msgs) > 0; msgs, err = d.ChannelMessages(ch, 100, lastMsg, "", "") {
 		for _, m := range msgs {
 			lastMsg = m.ID
@@ -89,31 +89,60 @@ func logChannel(ch string, d *discordgo.Session) {
 				break
 			}
 			if !cfg.Database().IsLogged(m.ID) {
-				fmt.Printf("\rLogging ID %s: %s", m.ID, m.Timestamp)
+				// fmt.Printf("\rLogging ID %s: %s   ", m.ID, m.Timestamp)
 				cfg.Database().LogMessage(m)
 			} else {
-				fmt.Printf("\rNot Logged: %s", m.ID)
+				// fmt.Printf("\rNot Logged: %s   ", m.ID)
 			}
 		}
 		if strings.Compare(lastMsg, new.ID) < 0 {
 			break
 		}
 	}
+}
+
+func logChannelOld(ch string, d *discordgo.Session) {
+	lastMsg := ""
+	old, _ := cfg.Database().OldestMessageInChannel(ch)
 
 	for msgs, err := d.ChannelMessages(ch, 100, old.ID, "", ""); err == nil && len(msgs) > 0; msgs, err = d.ChannelMessages(ch, 100, lastMsg, "", "") {
 		for _, m := range msgs {
 			lastMsg = m.ID
 			if !cfg.Database().IsLogged(m.ID) {
-				fmt.Printf("\rLogging ID %s: %s", m.ID, m.Timestamp)
+				// fmt.Printf("\rLogging ID %s: %s   ", m.ID, m.Timestamp)
 				cfg.Database().LogMessage(m)
 			} else {
-				fmt.Printf("\rNot Logged: %s", m.ID)
+				// fmt.Printf("\rNot Logged: %s   ", m.ID)
 			}
 		}
 	}
-	// if err != nil {
-	// 	fmt.Printf("\r[logChannel]: %s                       \n", err.Error())
-	// }
+}
+
+func logServerFast(d *discordgo.Session) {
+	fmt.Println("Logging new messages")
+	// svrs := d.State.Guilds
+	svrs := []string{
+		"138977883036188672",
+	}
+
+	newMsgs, _ := cfg.Database().NewestMessages()
+
+	for _, s := range svrs {
+		chans, _ := d.GuildChannels(s)
+		for _, ch := range chans {
+
+			if newMsgs[ch.ID] < ch.LastMessageID {
+				fmt.Printf("\n%s\n", ch.ID)
+				logChannelNew(ch.ID, d)
+			}
+		}
+	}
+	fmt.Println("\rFinished Scanning channels    ")
+}
+
+func logChannelFull(ch string, d *discordgo.Session) {
+	logChannelOld(ch, d)
+	logChannelNew(ch, d)
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {

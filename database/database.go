@@ -12,6 +12,7 @@ type Database interface {
 	IsLogged(mid string) bool
 	OldestMessageInChannel(cid string) (*discordgo.Message, error)
 	NewestMessageInChannel(cid string) (*discordgo.Message, error)
+	NewestMessages() (map[string]string, error)
 }
 
 func NewDatabase(t string, host string, name string) (interface{}, error) {
