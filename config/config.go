@@ -18,16 +18,20 @@ type Config struct {
 
 type configJSON struct {
 	Global struct {
-		TokenPath string `json:"token"`
-		Database  struct {
+		TokenPath  string   `json:"token"`
+		Prefix     string   `json:"prefix"`
+		LogServers []string `json:"logservers"`
+		Database   struct {
 			Dbtype string `json:"type"`
 			Host   string `json:"host"`
 			Dbname string `json:"dbname"`
 		} `json:"db"`
 	} `json:"global"`
 	Debug struct {
-		TokenPath string `json:"token"`
-		Database  struct {
+		TokenPath  string   `json:"token"`
+		Prefix     string   `json:"prefix"`
+		LogServers []string `json:"logservers"`
+		Database   struct {
 			CopyProduction bool   `json:"copyprod"`
 			Dbtype         string `json:"type"`
 			Host           string `json:"host"`

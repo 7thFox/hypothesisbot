@@ -22,13 +22,6 @@ var configPath = flag.String("config", "./config.json", "set location of config 
 
 var cfg *config.Config
 
-func prefix() string {
-	if *debugMode {
-		return "!!"
-	}
-	return "!"
-}
-
 func main() {
 	flag.Parse()
 	if *debugMode {
@@ -119,20 +112,13 @@ func logChannelOld(ch string, d *discordgo.Session) {
 }
 
 func logServerFast(d *discordgo.Session) {
-	fmt.Println("Logging new messages")
-	// svrs := d.State.Guilds
-	svrs := []string{
-		"138977883036188672",
-	}
-
+	fmt.Printf("Logging new messages")
 	newMsgs, _ := cfg.Database().NewestMessages()
 
-	for _, s := range svrs {
+	for _, s := range cfg.LogServers() {
 		chans, _ := d.GuildChannels(s)
 		for _, ch := range chans {
-
 			if newMsgs[ch.ID] < ch.LastMessageID {
-				fmt.Printf("\n%s\n", ch.ID)
 				logChannelNew(ch.ID, d)
 			}
 		}
@@ -149,7 +135,7 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	sender := sender.NewSender(s, m)
 	cfg.Database().LogMessage(m.Message)
 
-	cmd, _ := command.ParseCommand(m, prefix(), *debugMode)
+	cmd, _ := command.ParseCommand(m, cfg.Prefix(), *debugMode)
 	if cmd != nil {
 		(*cmd).Execute(*sender, s)
 	}
