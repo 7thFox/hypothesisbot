@@ -22,6 +22,7 @@ type configJSON struct {
 		Database  struct {
 			Dbtype string `json:"type"`
 			Host   string `json:"host"`
+			Dbname string `json:"dbname"`
 		} `json:"db"`
 	} `json:"global"`
 	Debug struct {
@@ -30,6 +31,7 @@ type configJSON struct {
 			CopyProduction bool   `json:"copyprod"`
 			Dbtype         string `json:"type"`
 			Host           string `json:"host"`
+			Dbname         string `json:"dbname"`
 		} `json:"db"`
 	} `json:"debug"`
 }

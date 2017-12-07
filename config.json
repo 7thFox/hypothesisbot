@@ -3,7 +3,8 @@
         "token": "./token",
         "db": {
             "type": "mongo",
-            "host": "localhost"
+            "host": "localhost",
+            "dbname": "hypothesis_bot"
         }
     }, 
     "debug": {
@@ -11,6 +12,7 @@
         "db": {
             "type": "mongo",
             "host": "localhost",
+            "dbname": "hypothesis_bot_debug",
             "copyprod": false
         }
     }

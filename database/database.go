@@ -12,9 +12,9 @@ type Database interface {
 	IsLogged(mid string) bool
 }
 
-func NewDatabase(t string, host string) (interface{}, error) {
+func NewDatabase(t string, host string, name string) (interface{}, error) {
 	if t == "mongo" {
-		return mongo.NewMongo(host)
+		return mongo.NewMongo(host, name)
 	}
 	return nil, errors.New("Unsupported Database type")
 }

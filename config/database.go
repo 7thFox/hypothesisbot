@@ -8,13 +8,20 @@ import (
 
 func (c *Config) Database() database.Database {
 	if c.db == nil {
-		db, err := database.NewDatabase(c.dbType(), c.dbHost())
+		db, err := database.NewDatabase(c.dbType(), c.dbHost(), c.dbName())
 		if err != nil {
 			fmt.Println(err.Error())
 		}
 		c.db = db.(database.Database)
 	}
 	return c.db
+}
+
+func (c *Config) dbName() string {
+	if c.Debug && c.json.Debug.Database.Dbname != "" {
+		return c.json.Debug.Database.Dbname
+	}
+	return c.json.Global.Database.Dbname
 }
 
 func (c *Config) dbType() string {

@@ -84,6 +84,8 @@ func logChannel(ch string, d *discordgo.Session) {
 			if !cfg.Database().IsLogged(m.ID) {
 				fmt.Printf("\rLogging ID %s", m.ID)
 				cfg.Database().LogMessage(m)
+			} else {
+				fmt.Printf("\rNot Logged: %s\n", m.ID)
 			}
 		}
 	}
