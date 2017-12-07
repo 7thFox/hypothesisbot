@@ -5,8 +5,9 @@ import (
 )
 
 type Mongo struct {
-	session *mgo.Session
-	db      *mgo.Database
+	session  *mgo.Session
+	messages *mgo.Collection
+	db       *mgo.Database
 }
 
 func NewMongo(host string, name string) (*Mongo, error) {
@@ -17,5 +18,6 @@ func NewMongo(host string, name string) (*Mongo, error) {
 	s := Mongo{}
 	s.session = session
 	s.db = s.session.DB(name)
+	s.messages = s.db.C("messages")
 	return &s, nil
 }

@@ -5,7 +5,6 @@ import (
 )
 
 func (db *Mongo) LogMessage(m *discordgo.Message) error {
-	c := db.db.C("messages")
-	err := c.Insert(m)
+	err := db.messages.Insert(m)
 	return err
 }

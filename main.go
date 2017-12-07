@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/7thFox/hypothesisbot/command"
@@ -77,7 +78,12 @@ func logServer(s string, d *discordgo.Session) {
 
 func logChannel(ch string, d *discordgo.Session) {
 	lastMsg := "" //"346148288803897355"
-	var err error
+	ts, err := cfg.Database().LastMessageInChannel(ch)
+
+	if strings.Compare(lastMsg, ts.ID) < 0 {
+		lastMsg = ts.ID
+	}
+
 	for msgs, err := d.ChannelMessages(ch, 100, lastMsg, "", ""); err == nil && len(msgs) > 0; msgs, err = d.ChannelMessages(ch, 100, lastMsg, "", "") {
 		for _, m := range msgs {
 			lastMsg = m.ID
