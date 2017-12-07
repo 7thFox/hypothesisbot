@@ -10,7 +10,8 @@ import (
 type Database interface {
 	LogMessage(m *discordgo.Message) error
 	IsLogged(mid string) bool
-	LastMessageInChannel(cid string) (*discordgo.Message, error)
+	OldestMessageInChannel(cid string) (*discordgo.Message, error)
+	NewestMessageInChannel(cid string) (*discordgo.Message, error)
 }
 
 func NewDatabase(t string, host string, name string) (interface{}, error) {

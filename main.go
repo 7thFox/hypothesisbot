@@ -70,35 +70,50 @@ func main() {
 
 func logServer(s string, d *discordgo.Session) {
 	chans, _ := d.GuildChannels(s)
+	fmt.Println("")
 	for _, ch := range chans {
-		fmt.Printf("Logging %s: %s\n", ch.ID, ch.Name)
+		fmt.Printf("\rLogging %s: %s                \n", ch.ID, ch.Name)
 		logChannel(ch.ID, d)
 	}
 }
 
 func logChannel(ch string, d *discordgo.Session) {
-	lastMsg := "" //"346148288803897355"
-	ts, err := cfg.Database().LastMessageInChannel(ch)
+	lastMsg := ""
+	old, _ := cfg.Database().OldestMessageInChannel(ch)
+	new, _ := cfg.Database().NewestMessageInChannel(ch)
 
-	if strings.Compare(lastMsg, ts.ID) < 0 {
-		lastMsg = ts.ID
+	for msgs, err := d.ChannelMessages(ch, 100, "", "", ""); err == nil && len(msgs) > 0; msgs, err = d.ChannelMessages(ch, 100, lastMsg, "", "") {
+		for _, m := range msgs {
+			lastMsg = m.ID
+			if strings.Compare(m.ID, new.ID) < 0 {
+				break
+			}
+			if !cfg.Database().IsLogged(m.ID) {
+				fmt.Printf("\rLogging ID %s: %s", m.ID, m.Timestamp)
+				cfg.Database().LogMessage(m)
+			} else {
+				fmt.Printf("\rNot Logged: %s", m.ID)
+			}
+		}
+		if strings.Compare(lastMsg, new.ID) < 0 {
+			break
+		}
 	}
 
-	for msgs, err := d.ChannelMessages(ch, 100, lastMsg, "", ""); err == nil && len(msgs) > 0; msgs, err = d.ChannelMessages(ch, 100, lastMsg, "", "") {
+	for msgs, err := d.ChannelMessages(ch, 100, old.ID, "", ""); err == nil && len(msgs) > 0; msgs, err = d.ChannelMessages(ch, 100, lastMsg, "", "") {
 		for _, m := range msgs {
 			lastMsg = m.ID
 			if !cfg.Database().IsLogged(m.ID) {
-				fmt.Printf("\rLogging ID %s", m.ID)
+				fmt.Printf("\rLogging ID %s: %s", m.ID, m.Timestamp)
 				cfg.Database().LogMessage(m)
 			} else {
-				fmt.Printf("\rNot Logged: %s\n", m.ID)
+				fmt.Printf("\rNot Logged: %s", m.ID)
 			}
 		}
 	}
-	if err != nil {
-		fmt.Println("logChannel", err.Error())
-	}
-
+	// if err != nil {
+	// 	fmt.Printf("\r[logChannel]: %s                       \n", err.Error())
+	// }
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
