@@ -12,7 +12,7 @@ func (c *Config) Token() string {
 		buf := bytes.NewBuffer(nil)
 		f, err := os.Open(c.tokenFilename())
 		if err != nil {
-			fmt.Println("Could not open token file")
+			fmt.Printf("Could not open token file from %s\n", c.tokenFilename())
 			os.Exit(1)
 		}
 		_, err = io.Copy(buf, f)

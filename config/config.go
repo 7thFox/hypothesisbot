@@ -42,6 +42,7 @@ type configJSON struct {
 
 func NewConfig(path string, d bool) *Config {
 	var cfg Config
+	fmt.Printf("Loading Config from %s\n", path)
 	file, err := os.Open(path)
 	if err != nil {
 		fmt.Println(err.Error())
