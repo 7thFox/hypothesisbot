@@ -68,6 +68,7 @@ func main() {
 func logServer(s string, d *discordgo.Session) {
 	chans, _ := d.GuildChannels(s)
 	for _, ch := range chans {
+		lgr.Log("Logging " + ch.Name)
 		logChannelFull(ch.ID, d)
 	}
 }
