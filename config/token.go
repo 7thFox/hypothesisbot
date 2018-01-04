@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 func (c *Config) Token() string {
@@ -23,6 +24,7 @@ func (c *Config) Token() string {
 		}
 		f.Close()
 		s := string(buf.Bytes())
+		s = strings.TrimSpace(s)
 		c.token = s
 	}
 
