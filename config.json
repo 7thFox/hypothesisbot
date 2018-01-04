@@ -9,6 +9,11 @@
             "type": "mongo",
             "host": "localhost",
             "dbname": "hypothesis_bot"
+        },
+        "log": {
+            "console": true,
+            "channel": "139718812705619968",
+            "db": ""
         }
     }, 
     "debug": {
@@ -20,6 +25,11 @@
             "host": "localhost",
             "dbname": "hypothesis_bot_debug",
             "copyprod": false
+        },
+        "log": {
+            "console": true,
+            "channel": "316897930302717962",
+            "db": ""
         }
     }
 }

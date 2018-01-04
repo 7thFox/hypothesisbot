@@ -6,12 +6,14 @@ import (
 	"os"
 
 	"github.com/7thFox/hypothesisbot/database"
+	"github.com/7thFox/hypothesisbot/log"
 )
 
 type Config struct {
 	json configJSON
 
 	db    database.Database
+	lgr   log.Logger
 	Debug bool
 	token string
 }
@@ -26,6 +28,11 @@ type configJSON struct {
 			Host   string `json:"host"`
 			Dbname string `json:"dbname"`
 		} `json:"db"`
+		Logging struct {
+			Console   bool   `json:"console"`
+			ChannelID string `json:"channel"`
+			Dbname    string `json:"db"`
+		} `json:"log"`
 	} `json:"global"`
 	Debug struct {
 		TokenPath  string   `json:"token"`
@@ -37,6 +44,11 @@ type configJSON struct {
 			Host           string `json:"host"`
 			Dbname         string `json:"dbname"`
 		} `json:"db"`
+		Logging struct {
+			Console   bool   `json:"console"`
+			ChannelID string `json:"channel"`
+			Dbname    string `json:"db"`
+		} `json:"log"`
 	} `json:"debug"`
 }
 

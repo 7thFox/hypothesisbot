@@ -24,21 +24,19 @@ var cfg *config.Config
 var lgr log.Logger
 
 func main() {
-	lgr = log.NewConsoleLogger()
 	flag.Parse()
-	if *debugMode {
-		lgr.Log("Debug Mode")
-	}
-
 	cfg = config.NewConfig(*configPath, *debugMode)
-
 	discord, err := discordgo.New("Bot " + cfg.Token()) // No more pushing code with my token
 	if err != nil {
-		lgr.Log(err.Error())
-		return
+		cfg.Logger(nil).Log(err.Error())
 	}
 
+	lgr = cfg.Logger(discord)
 	lgr.Log("Connected")
+
+	if *debugMode {
+		lgr.Log("Debug Mode Enabled")
+	}
 
 	if *slog != "" {
 		lgr.Log("Server Log Mode enabled: Logging...")
@@ -68,7 +66,7 @@ func main() {
 func logServer(s string, d *discordgo.Session) {
 	chans, _ := d.GuildChannels(s)
 	for _, ch := range chans {
-		lgr.Log("Logging " + ch.Name)
+		lgr.LogState("Logging " + ch.Name)
 		logChannelFull(ch.ID, d)
 	}
 }
