@@ -12,8 +12,11 @@ import (
 type Config struct {
 	json configJSON
 
-	db    database.Database
-	lgr   log.Logger
+	db database.Database
+
+	lgr           *log.MultiLogger
+	lgrHasSession bool
+
 	Debug bool
 	token string
 }

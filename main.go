@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"os/signal"
 	"strings"
@@ -30,6 +31,7 @@ func main() {
 
 	if err != nil {
 		cfg.Logger(nil).Log(err.Error())
+		return
 	}
 	if err = discord.Open(); err != nil {
 		cfg.Logger(nil).Log(err.Error())
@@ -39,6 +41,7 @@ func main() {
 
 	lgr = cfg.Logger(discord)
 	lgr.Log("Connected")
+	cfg.Database() // Initialize the DB now instead of later
 
 	if *debugMode {
 		lgr.Log("Debug Mode Enabled")
@@ -51,10 +54,11 @@ func main() {
 		discord.Close()
 		os.Exit(0)
 	} else {
+		discord.AddHandler(messageHandler)
 		logServerFast(discord)
 	}
 
-	discord.AddHandler(messageHandler)
+	// discord.AddHandler(messageHandler)
 
 	lgr.Log("Finished startup")
 	sc := make(chan os.Signal, 1)
@@ -112,7 +116,9 @@ func logServerFast(d *discordgo.Session) {
 	for _, s := range cfg.LogServers() {
 		chans, _ := d.GuildChannels(s)
 		for _, ch := range chans {
+			lgr.LogState(fmt.Sprintf("Checking %s #%s", s, ch.Name))
 			if newMsgs[ch.ID] < ch.LastMessageID {
+				lgr.Log(fmt.Sprintf("Logging  %s #%s", s, ch.Name))
 				logChannelNew(ch.ID, d)
 			}
 		}

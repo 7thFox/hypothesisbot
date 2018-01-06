@@ -7,21 +7,20 @@ import (
 
 func (c *Config) Logger(session *discordgo.Session) log.Logger {
 	if c.lgr == nil {
-		lgr := log.NewMultiLogger()
+		c.lgr = log.NewMultiLogger()
 
 		if c.logConsole() {
-			lgr.Attach(log.NewConsoleLogger())
+			c.lgr.Attach(log.NewConsoleLogger())
 		}
 		if n := c.logDbName(); n != "" {
 			// TODO
 		}
-		if cid := c.logChannelID(); cid != "" && session != nil {
-			lgr.Attach(log.NewChannelLogger(session, cid))
-		}
+	}
 
-		var l log.Logger
-		l = lgr
-		c.lgr = l
+	// Allows attaching the session later in the cycle
+	if cid := c.logChannelID(); cid != "" && session != nil && !c.lgrHasSession {
+		c.lgr.Attach(log.NewChannelLogger(session, cid))
+		c.lgrHasSession = true
 	}
 
 	return c.lgr
