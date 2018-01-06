@@ -118,7 +118,7 @@ func logServerFast(d *discordgo.Session) {
 		for _, ch := range chans {
 			lgr.LogState(fmt.Sprintf("Checking %s #%s", s, ch.Name))
 			if newMsgs[ch.ID] < ch.LastMessageID {
-				lgr.Log(fmt.Sprintf("Logging  %s #%s", s, ch.Name))
+				lgr.LogState(fmt.Sprintf("Logging  %s #%s", s, ch.Name))
 				lastMsg := ""
 				for msgs, err := d.ChannelMessages(ch.ID, 100, "", "", ""); err == nil && len(msgs) > 0; msgs, err = d.ChannelMessages(ch.ID, 100, lastMsg, "", "") {
 					for _, m := range msgs {
@@ -138,7 +138,7 @@ func logServerFast(d *discordgo.Session) {
 			}
 		}
 	}
-	lgr.Log("Finished scanning channels")
+	lgr.Log("New messages logged")
 }
 
 func logChannelFull(ch string, d *discordgo.Session) {

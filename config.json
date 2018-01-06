@@ -3,7 +3,8 @@
         "token": "./token",
         "prefix": "!",
         "logservers": [
-            "138977883036188672"
+            "138977883036188672",
+            "135433344140705793"
         ],
         "db": {
             "type": "mongo",
@@ -18,7 +19,10 @@
     "debug": {
         "token": "./token.debug",
         "prefix": "!!",
-        "logservers": [],
+        "logservers": [
+            "138977883036188672",
+            "135433344140705793"
+        ],
         "db": {
             "type": "mongo",
             "host": "localhost",
@@ -27,7 +31,7 @@
         },
         "log": {
             "console": true,
-            "channel": "316897930302717962",
+            "channel": "399285813214576640",
             "db": ""
         }
     }

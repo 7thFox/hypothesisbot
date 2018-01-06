@@ -33,7 +33,7 @@ type NewMessage struct {
 func (db *Mongo) NewestMessagesBefore(t time.Time) (map[string]string, error) {
 
 	itr := db.messages.Pipe([]bson.M{
-		{"$match": bson.M{"timestamp": bson.M{"$lt": t}}},
+		{"$match": bson.M{"timestamp": bson.M{"$lt": t.String()}}},
 		{"$group": bson.M{
 			"_id":       "$channelid",
 			"channelid": bson.M{"$first": "$channelid"},
