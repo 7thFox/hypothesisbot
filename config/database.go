@@ -9,10 +9,10 @@ import (
 
 func (c *Config) Database() database.Database {
 	if c.db == nil {
+		c.Logger(nil).Log(fmt.Sprintf("Connecting to DB...\nHost: %s, Name: %s Type: %s", c.dbHost(), c.dbName(), c.dbType()))
 		db, err := database.NewDatabase(c.dbType(), c.dbHost(), c.dbName())
 		if err != nil {
 			c.Logger(nil).Log(fmt.Sprintf("Error getting database: %s", err.Error()))
-			c.Logger(nil).Log(fmt.Sprintf("Host: %s, Name: %s Type: %s", c.dbHost(), c.dbName(), c.dbType()))
 			out, _ := exec.Command("ping", c.dbHost(), "-c 5", "-w 10").Output()
 			c.Logger(nil).Log(string(out))
 			return nil
