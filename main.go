@@ -27,9 +27,15 @@ func main() {
 	flag.Parse()
 	cfg = config.NewConfig(*configPath, *debugMode)
 	discord, err := discordgo.New("Bot " + cfg.Token()) // No more pushing code with my token
+
 	if err != nil {
 		cfg.Logger(nil).Log(err.Error())
 	}
+	if err = discord.Open(); err != nil {
+		cfg.Logger(nil).Log(err.Error())
+		return
+	}
+	defer discord.Close()
 
 	lgr = cfg.Logger(discord)
 	lgr.Log("Connected")
@@ -50,17 +56,12 @@ func main() {
 
 	discord.AddHandler(messageHandler)
 
-	if err = discord.Open(); err != nil {
-		lgr.Log(err.Error())
-		return
-	}
-
 	lgr.Log("Finished startup")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
 
-	discord.Close()
+	// discord.Close()
 }
 
 func logServer(s string, d *discordgo.Session) {
