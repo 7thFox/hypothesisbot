@@ -126,7 +126,7 @@ func logChannelFull(ch string, d *discordgo.Session) {
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
-	sender := sender.NewSender(s, m)
+	sender := sender.NewSender(s, m, lgr)
 	cfg.Database().LogMessage(m.Message)
 
 	cmd, _ := command.ParseCommand(m, cfg.Prefix(), *debugMode)

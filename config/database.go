@@ -11,12 +11,13 @@ func (c *Config) Database() database.Database {
 	if c.db == nil {
 		db, err := database.NewDatabase(c.dbType(), c.dbHost(), c.dbName())
 		if err != nil {
-			fmt.Printf("\nError getting database: %s\n", err.Error())
-			fmt.Printf("Host: %s, Name: %s Type: %s\n", c.dbHost(), c.dbName(), c.dbType())
+			c.Logger(nil).Log(fmt.Sprintf("Error getting database: %s", err.Error()))
+			c.Logger(nil).Log(fmt.Sprintf("Host: %s, Name: %s Type: %s", c.dbHost(), c.dbName(), c.dbType()))
 			out, _ := exec.Command("ping", c.dbHost(), "-c 5", "-w 10").Output()
-			fmt.Println(string(out))
+			c.Logger(nil).Log(string(out))
 			return nil
 		}
+		c.Logger(nil).Log("DB Connected")
 		c.db = db.(database.Database)
 	}
 	return c.db
