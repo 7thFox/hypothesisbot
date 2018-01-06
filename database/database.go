@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"time"
 
 	"github.com/7thFox/hypothesisbot/database/mongo"
 	"github.com/bwmarrin/discordgo"
@@ -12,7 +13,7 @@ type Database interface {
 	IsLogged(mid string) bool
 	OldestMessageInChannel(cid string) (*discordgo.Message, error)
 	NewestMessageInChannel(cid string) (*discordgo.Message, error)
-	NewestMessages() (map[string]string, error)
+	NewestMessagesBefore(time.Time) (map[string]string, error)
 }
 
 func NewDatabase(t string, host string, name string) (interface{}, error) {

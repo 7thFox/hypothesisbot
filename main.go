@@ -111,7 +111,7 @@ func logChannelOld(ch string, d *discordgo.Session) {
 
 func logServerFast(d *discordgo.Session) {
 	lgr.LogState("Logging new messages")
-	newMsgs, _ := cfg.Database().NewestMessages()
+	newMsgs, _ := cfg.Database().NewestMessagesBefore(cfg.StartTime)
 
 	for _, s := range cfg.LogServers() {
 		chans, _ := d.GuildChannels(s)
@@ -119,7 +119,22 @@ func logServerFast(d *discordgo.Session) {
 			lgr.LogState(fmt.Sprintf("Checking %s #%s", s, ch.Name))
 			if newMsgs[ch.ID] < ch.LastMessageID {
 				lgr.Log(fmt.Sprintf("Logging  %s #%s", s, ch.Name))
-				logChannelNew(ch.ID, d)
+				lastMsg := ""
+				for msgs, err := d.ChannelMessages(ch.ID, 100, "", "", ""); err == nil && len(msgs) > 0; msgs, err = d.ChannelMessages(ch.ID, 100, lastMsg, "", "") {
+					for _, m := range msgs {
+						lastMsg = m.ID
+						if strings.Compare(m.ID, newMsgs[ch.ID]) < 0 {
+							break
+						}
+						if !cfg.Database().IsLogged(m.ID) {
+							cfg.Database().LogMessage(m)
+						} else {
+						}
+					}
+					if strings.Compare(lastMsg, newMsgs[ch.ID]) < 0 {
+						break
+					}
+				}
 			}
 		}
 	}

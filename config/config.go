@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/7thFox/hypothesisbot/database"
 	"github.com/7thFox/hypothesisbot/log"
@@ -17,8 +18,9 @@ type Config struct {
 	lgr           *log.MultiLogger
 	lgrHasSession bool
 
-	Debug bool
-	token string
+	StartTime time.Time
+	Debug     bool
+	token     string
 }
 
 type configJSON struct {
@@ -66,6 +68,7 @@ func NewConfig(path string, d bool) *Config {
 	jsonParser.Decode(&(cfg.json))
 
 	cfg.Debug = d
+	cfg.StartTime = time.Now()
 
 	return &cfg
 }
