@@ -10,7 +10,7 @@ func (c *Config) Database() database.Database {
 	if c.db == nil {
 		db, err := database.NewDatabase(c.dbType(), c.dbHost(), c.dbName())
 		if err != nil {
-			fmt.Println(err.Error())
+			fmt.Printf("\nError getting database: %s\n", err.Error())
 		}
 		c.db = db.(database.Database)
 	}
