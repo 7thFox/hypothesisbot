@@ -12,6 +12,7 @@ import (
 	"github.com/7thFox/hypothesisbot/config"
 	"github.com/7thFox/hypothesisbot/log"
 	"github.com/7thFox/hypothesisbot/sender"
+	"github.com/7thFox/hypothesisbot/startup"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -48,9 +49,7 @@ func main() {
 	}
 
 	if *slog != "" {
-		lgr.Log("Server Log Mode enabled: Logging...")
-		logServer(*slog, discord)
-		lgr.Log("Finished Logging Server")
+		startup.ServerLog(*slog, discord, cfg.Database(), lgr)
 		discord.Close()
 		os.Exit(0)
 	} else {
@@ -64,49 +63,6 @@ func main() {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
-}
-
-func logServer(s string, d *discordgo.Session) {
-	chans, _ := d.GuildChannels(s)
-	for _, ch := range chans {
-		lgr.LogState("Logging " + ch.Name)
-		logChannelFull(ch.ID, d)
-	}
-}
-
-func logChannelNew(ch string, d *discordgo.Session) {
-	lastMsg := ""
-	new, _ := cfg.Database().NewestMessageInChannel(ch)
-	for msgs, err := d.ChannelMessages(ch, 100, "", "", ""); err == nil && len(msgs) > 0; msgs, err = d.ChannelMessages(ch, 100, lastMsg, "", "") {
-		for _, m := range msgs {
-			lastMsg = m.ID
-			if strings.Compare(m.ID, new.ID) < 0 {
-				break
-			}
-			if !cfg.Database().IsLogged(m.ID) {
-				cfg.Database().LogMessage(m)
-			} else {
-			}
-		}
-		if strings.Compare(lastMsg, new.ID) < 0 {
-			break
-		}
-	}
-}
-
-func logChannelOld(ch string, d *discordgo.Session) {
-	lastMsg := ""
-	old, _ := cfg.Database().OldestMessageInChannel(ch)
-
-	for msgs, err := d.ChannelMessages(ch, 100, old.ID, "", ""); err == nil && len(msgs) > 0; msgs, err = d.ChannelMessages(ch, 100, lastMsg, "", "") {
-		for _, m := range msgs {
-			lastMsg = m.ID
-			if !cfg.Database().IsLogged(m.ID) {
-				cfg.Database().LogMessage(m)
-			} else {
-			}
-		}
-	}
 }
 
 func logServerFast(d *discordgo.Session) {
@@ -138,12 +94,7 @@ func logServerFast(d *discordgo.Session) {
 			}
 		}
 	}
-	lgr.Log("New messages logged")
-}
-
-func logChannelFull(ch string, d *discordgo.Session) {
-	logChannelOld(ch, d)
-	logChannelNew(ch, d)
+	lgr.LogState("New messages logged")
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
