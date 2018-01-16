@@ -22,23 +22,23 @@ func logServer(s string, d *discordgo.Session, db database.Database, lgr log.Log
 	chans, _ := d.GuildChannels(s)
 	for _, ch := range chans {
 		lgr.LogState("Logging " + ch.Name)
-		if err := logChannelFull(ch.ID, db, d); err != nil {
+		if err := logChannelFull(ch.ID, d, db); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func logChannelFull(ch string, db database.Database, d *discordgo.Session) error {
-	err := logChannelOld(ch, db, d)
+func logChannelFull(ch string, d *discordgo.Session, db database.Database) error {
+	err := logChannelOld(ch, d, db)
 	if err != nil {
 		return err
 	}
-	err = logChannelNew(ch, db, d)
+	err = logChannelNew(ch, d, db)
 	return err
 }
 
-func logChannelOld(ch string, db database.Database, d *discordgo.Session) error {
+func logChannelOld(ch string, d *discordgo.Session, db database.Database) error {
 	lastMsg := ""
 	old, _ := db.OldestMessageInChannel(ch)
 
@@ -54,7 +54,7 @@ func logChannelOld(ch string, db database.Database, d *discordgo.Session) error 
 	return err
 }
 
-func logChannelNew(ch string, db database.Database, d *discordgo.Session) error {
+func logChannelNew(ch string, d *discordgo.Session, db database.Database) error {
 	var err error
 	lastMsg := ""
 	new, _ := db.NewestMessageInChannel(ch)

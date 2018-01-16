@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
 	"github.com/7thFox/hypothesisbot/command"
@@ -28,16 +27,10 @@ var lgr log.Logger
 func main() {
 	flag.Parse()
 	cfg = config.NewConfig(*configPath, *debugMode)
-	discord, err := discordgo.New("Bot " + cfg.Token()) // No more pushing code with my token
+	discord, err := discordgo.New("Bot " + cfg.Token())
+	handleError(err)
 
-	if err != nil {
-		cfg.Logger(nil).Log(err.Error())
-		return
-	}
-	if err = discord.Open(); err != nil {
-		cfg.Logger(nil).Log(err.Error())
-		return
-	}
+	handleError(discord.Open())
 	defer discord.Close()
 
 	lgr = cfg.Logger(discord)
@@ -48,53 +41,30 @@ func main() {
 		lgr.Log("Debug Mode Enabled")
 	}
 
-	if *slog != "" {
-		startup.ServerLog(*slog, discord, cfg.Database(), lgr)
-		discord.Close()
-		os.Exit(0)
-	} else {
-		discord.AddHandler(messageHandler)
-		logServerFast(discord)
-	}
+	startupTasks(discord)
 
-	// discord.AddHandler(messageHandler)
-
-	lgr.Log("Finished startup")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
 }
 
-func logServerFast(d *discordgo.Session) {
-	lgr.LogState("Logging new messages")
-	newMsgs, _ := cfg.Database().NewestMessagesBefore(cfg.StartTime)
-
-	for _, s := range cfg.LogServers() {
-		chans, _ := d.GuildChannels(s)
-		for _, ch := range chans {
-			lgr.LogState(fmt.Sprintf("Checking %s #%s", s, ch.Name))
-			if newMsgs[ch.ID] < ch.LastMessageID {
-				lgr.LogState(fmt.Sprintf("Logging  %s #%s", s, ch.Name))
-				lastMsg := ""
-				for msgs, err := d.ChannelMessages(ch.ID, 100, "", "", ""); err == nil && len(msgs) > 0; msgs, err = d.ChannelMessages(ch.ID, 100, lastMsg, "", "") {
-					for _, m := range msgs {
-						lastMsg = m.ID
-						if strings.Compare(m.ID, newMsgs[ch.ID]) < 0 {
-							break
-						}
-						if !cfg.Database().IsLogged(m.ID) {
-							cfg.Database().LogMessage(m)
-						} else {
-						}
-					}
-					if strings.Compare(lastMsg, newMsgs[ch.ID]) < 0 {
-						break
-					}
-				}
-			}
-		}
+func startupTasks(d *discordgo.Session) {
+	if *slog != "" {
+		startup.ServerLog(*slog, d, cfg.Database(), lgr)
+		d.Close()
+		os.Exit(0)
+	} else {
+		d.AddHandler(messageHandler)
+		startup.LogServerFast(cfg.LogServers(), cfg.StartTime, d, cfg.Database(), lgr)
 	}
-	lgr.LogState("New messages logged")
+	lgr.Log("Finished startup")
+}
+
+func handleError(err error) {
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
 }
 
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
