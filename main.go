@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
+	"time"
 
 	"github.com/7thFox/hypothesisbot/command"
 	"github.com/7thFox/hypothesisbot/config"
@@ -19,6 +21,8 @@ import (
 /************  Startup Flags  ************/
 var debugMode = flag.Bool("debug", false, "run in debug mode with debug settings")
 var slog = flag.String("slog", "", "log all channels of given server")
+var cpurge = flag.String("cpurge", "", "purges channels from given server(s) after given date (yyyy-mm-dd)")
+var cpurgelist = flag.String("cpurgelist", "", "lists purge canidate channels from given server(s) after given date (yyyy-mm-dd)")
 var configPath = flag.String("config", "./config.json", "set location of config file")
 
 var cfg *config.Config
@@ -53,10 +57,28 @@ func startupTasks(d *discordgo.Session) {
 		startup.ServerLog(*slog, d, cfg.Database(), lgr)
 		d.Close()
 		os.Exit(0)
-	} else {
-		d.AddHandler(messageHandler)
-		startup.LogServerFast(cfg.LogServers(), cfg.StartTime, d, cfg.Database(), lgr)
 	}
+
+	if *cpurgelist != "" {
+		args := strings.Split(*cpurge, " ")
+		if len(args) < 2 {
+			handleError(fmt.Errorf("cpurge: Expected 2+ args. Got %d", len(args)))
+		}
+		t, err := time.Parse("2006-01-02", args[len(args)-1])
+		handleError(err)
+
+		for _, sid := range args[:len(args)-1] {
+			handleError(startup.ChannelPurgeList(sid, t, d, lgr))
+		}
+
+		fmt.Println(*cpurge)
+		d.Close()
+		os.Exit(0)
+	}
+
+	d.AddHandler(messageHandler)
+	startup.LogServerFast(cfg.LogServers(), cfg.StartTime, d, cfg.Database(), lgr)
+
 	lgr.Log("Finished startup")
 }
 
