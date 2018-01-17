@@ -19,10 +19,6 @@
     "debug": {
         "token": "./token.debug",
         "prefix": "!!",
-        "logservers": [
-            "138977883036188672",
-            "135433344140705793"
-        ],
         "db": {
             "type": "mongo",
             "host": "localhost",
@@ -30,9 +26,7 @@
             "copyprod": false
         },
         "log": {
-            "console": true,
-            "channel": "316897930302717962",
-            "db": ""
+            "console": true
         }
     }
 }
