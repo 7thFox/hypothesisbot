@@ -60,9 +60,9 @@ func startupTasks(d *discordgo.Session) {
 	}
 
 	if *cpurgelist != "" {
-		args := strings.Split(*cpurge, " ")
+		args := strings.Split(*cpurgelist, " ")
 		if len(args) < 2 {
-			handleError(fmt.Errorf("cpurge: Expected 2+ args. Got %d", len(args)))
+			handleError(fmt.Errorf("cpurgelist: Expected 2+ args. Got %d", len(args)))
 		}
 		t, err := time.Parse("2006-01-02", args[len(args)-1])
 		handleError(err)
@@ -85,7 +85,7 @@ func startupTasks(d *discordgo.Session) {
 		handleError(err)
 
 		for _, sid := range args[:len(args)-1] {
-			handleError(startup.ChannelPurgeList(sid, t, d, lgr))
+			handleError(startup.ChannelPurge(sid, t, d, lgr))
 		}
 
 		lgr.Log("End of channel purge")

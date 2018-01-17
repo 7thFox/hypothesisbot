@@ -49,7 +49,7 @@ func ChannelPurge(sid string, t time.Time, s *discordgo.Session, l log.Logger) e
 		}
 
 		if tt, _ := ms[0].Timestamp.Parse(); tt.Before(t) {
-			l.Log(fmt.Sprintf("Purgeing: (%s) #%s", ch.ID, ch.Name))
+			l.Log(fmt.Sprintf("Purging: (%s) #%s", ch.ID, ch.Name))
 			_, err := s.ChannelDelete(ch.ID)
 			if err != nil {
 				l.Log("Error deleting channel")
