@@ -6,8 +6,8 @@ type Submenu struct {
 	Options []MenuOption
 }
 
-func (s Submenu) Execute(sn Sender) error {
-	return sn.Menu(s.Tlt, s.Desc, s.Options)
+func (s Submenu) Execute(sn Sender, parentMsgID string) error {
+	return sn.MenuReplace(s.Tlt, s.Desc, s.Options, parentMsgID)
 }
 func (s Submenu) Title() string {
 	return s.Tlt

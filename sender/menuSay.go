@@ -6,8 +6,8 @@ type MenuSay struct {
 	Txt  string
 }
 
-func (s MenuSay) Execute(sn Sender) error {
-	return sn.Say(s.Txt)
+func (s MenuSay) Execute(sn Sender, parentMsgID string) error {
+	return sn.SayReplace(s.Txt, parentMsgID)
 }
 func (s MenuSay) Title() string {
 	return s.Tlt
