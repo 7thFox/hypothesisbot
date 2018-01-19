@@ -13,6 +13,7 @@ import (
 	"github.com/7thFox/hypothesisbot/log"
 	"github.com/7thFox/hypothesisbot/sender"
 	"github.com/7thFox/hypothesisbot/startup"
+	"github.com/7thFox/hypothesisbot/web"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -43,6 +44,8 @@ func main() {
 	if *debugMode {
 		lgr.Log("Debug Mode Enabled")
 	}
+
+	handleError(web.StartWeb())
 
 	startupTasks(discord)
 
