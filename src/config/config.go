@@ -6,9 +6,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/7thFox/hypothesisbot/command"
-	"github.com/7thFox/hypothesisbot/database"
-	"github.com/7thFox/hypothesisbot/log"
+	"github.com/7thFox/hypothesisbot/src/command"
+	"github.com/7thFox/hypothesisbot/src/database"
+	"github.com/7thFox/hypothesisbot/src/log"
 )
 
 const version = "0.02.00"

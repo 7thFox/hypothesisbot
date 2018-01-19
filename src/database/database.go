@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/7thFox/hypothesisbot/database/mongo"
+	"github.com/7thFox/hypothesisbot/src/database/mongo"
 	"github.com/bwmarrin/discordgo"
 )
 

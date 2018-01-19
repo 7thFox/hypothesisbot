@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/7thFox/hypothesisbot/database"
+	"github.com/7thFox/hypothesisbot/src/database"
 )
 
 func (c *Config) Database() database.Database {

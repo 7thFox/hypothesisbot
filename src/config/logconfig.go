@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/7thFox/hypothesisbot/log"
+	"github.com/7thFox/hypothesisbot/src/log"
 	"github.com/bwmarrin/discordgo"
 )
 

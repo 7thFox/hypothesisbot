@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/7thFox/hypothesisbot/command"
+	"github.com/7thFox/hypothesisbot/src/command"
 )
 
 func (c *Config) Commands() map[string]command.Command {

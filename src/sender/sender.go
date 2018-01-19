@@ -3,7 +3,7 @@ package sender
 import (
 	"github.com/bwmarrin/discordgo"
 
-	"github.com/7thFox/hypothesisbot/log"
+	"github.com/7thFox/hypothesisbot/src/log"
 )
 
 // Sender is an object for basic replies in channels

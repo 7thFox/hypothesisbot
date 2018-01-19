@@ -9,11 +9,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/7thFox/hypothesisbot/config"
-	"github.com/7thFox/hypothesisbot/log"
-	"github.com/7thFox/hypothesisbot/sender"
-	"github.com/7thFox/hypothesisbot/startup"
-	"github.com/7thFox/hypothesisbot/web"
+	"github.com/7thFox/hypothesisbot/src/config"
+	"github.com/7thFox/hypothesisbot/src/log"
+	"github.com/7thFox/hypothesisbot/src/sender"
+	"github.com/7thFox/hypothesisbot/src/startup"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -23,7 +22,7 @@ var debugMode = flag.Bool("debug", false, "run in debug mode with debug settings
 var slog = flag.String("slog", "", "log all channels of given server")
 var cpurge = flag.String("cpurge", "", "purges channels from given server(s) after given date (yyyy-mm-dd)")
 var cpurgelist = flag.String("cpurgelist", "", "lists purge canidate channels from given server(s) after given date (yyyy-mm-dd)")
-var configPath = flag.String("config", "./config.json", "set location of config file")
+var configPath = flag.String("config", "../config.json", "set location of config file")
 
 var cfg *config.Config
 var lgr log.Logger
@@ -45,7 +44,7 @@ func main() {
 		lgr.Log("Debug Mode Enabled")
 	}
 
-	handleError(web.StartWeb())
+	// handleError(web.StartWeb())
 
 	startupTasks(discord)
 

@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"os"
 
-	"github.com/7thFox/hypothesisbot/sender"
+	"github.com/7thFox/hypothesisbot/src/sender"
 )
 
 type Kill struct {
