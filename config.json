@@ -1,6 +1,6 @@
 {
     "global": {
-        "token": "../token",
+        "token": "./token",
         "prefix": "!",
         "logservers": [
             "138977883036188672",
@@ -19,7 +19,7 @@
         ]
     }, 
     "debug": {
-        "token": "../token.debug",
+        "token": "./token.debug",
         "prefix": "!!",
         "db": {
             "type": "mongo",
