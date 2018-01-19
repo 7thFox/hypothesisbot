@@ -1,6 +1,8 @@
 package command
 
 import (
+	"fmt"
+
 	"github.com/7thFox/hypothesisbot/sender"
 )
 
@@ -23,37 +25,19 @@ func (c Help) Execute(s sender.Sender, args string) error {
 	return s.Menu(c.title, c.desc, c.menutree)
 }
 
-func NewHelp() *Help {
+func NewHelp(cmds []Command) *Help {
 	c := new(Help)
 	c.title = "Help Menu"
-	c.desc = "Currently just a test of the menu feature. Sorry, no help for you."
-	c.menutree = []sender.MenuOption{
-		sender.Submenu{
-			"Foo",
-			"Does foo things",
-			[]sender.MenuOption{
-				sender.MenuSay{
-					"Bar",
-					"Does bar things",
-					"BAR!!!!!",
-				},
-				sender.MenuSay{
-					"Foobar",
-					"Does foobar things",
-					"FOOBAR!!!!!",
-				},
-			},
-		},
-		sender.MenuSay{
-			"Baz",
-			"Does baz things",
-			"BAZ!!!!!",
-		},
-		sender.MenuSay{
-			"Foobaz",
-			"Does foobaz things",
-			"FOOBAZ!!!!!",
-		},
+	c.desc = "Select a command to see it's help message."
+	c.menutree = []sender.MenuOption{}
+
+	for _, cmd := range cmds {
+		c.menutree = append(c.menutree, sender.MenuSay{
+			cmd.Name(),
+			"",
+			fmt.Sprintf("__**%s**__\n\n%s", cmd.Name(), cmd.HelpText()),
+		})
 	}
+
 	return c
 }

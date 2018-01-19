@@ -16,6 +16,9 @@ func (c *Config) Commands() map[string]command.Command {
 			command.NewTest(),
 			command.NewVersion(c.Version),
 		}
+
+		cmdsAll = append(cmdsAll, command.NewHelp(cmdsAll))
+
 		// read config and construct commands
 		c.cmds = map[string]command.Command{}
 		for _, cmd := range cmdsAll {
