@@ -4,13 +4,20 @@ import (
 	"time"
 
 	"github.com/7thFox/hypothesisbot/sender"
-	"github.com/bwmarrin/discordgo"
 )
 
 type Noot struct {
 }
 
-func (c Noot) Execute(s sender.Sender, d *discordgo.Session) error {
+func (c Noot) Name() string {
+	return "noot"
+}
+
+func (c Noot) HelpText() string {
+	return "For people that understand that penguins are better than owls"
+}
+
+func (c Noot) Execute(s sender.Sender, args string) error {
 	msg := make(chan string, 10)
 	exit := make(chan int)
 	go s.Update(msg, exit)
@@ -23,7 +30,7 @@ func (c Noot) Execute(s sender.Sender, d *discordgo.Session) error {
 	return nil
 }
 
-func NewNoot(args string) *Noot {
+func NewNoot() *Noot {
 	this := new(Noot)
 	return this
 }

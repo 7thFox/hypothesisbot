@@ -6,13 +6,20 @@ import (
 	"os"
 
 	"github.com/7thFox/hypothesisbot/sender"
-	"github.com/bwmarrin/discordgo"
 )
 
 type Kill struct {
 }
 
-func (t Kill) Execute(s sender.Sender, d *discordgo.Session) error {
+func (c Kill) Name() string {
+	return "kill"
+}
+
+func (c Kill) HelpText() string {
+	return "[RESTRICTED] Kills the bot"
+}
+
+func (t Kill) Execute(s sender.Sender, args string) error {
 	if !s.IsOwner() {
 		msgs := []string{
 			"Just what do you think you're doing, Dave?",
@@ -45,12 +52,11 @@ func (t Kill) Execute(s sender.Sender, d *discordgo.Session) error {
 		return errors.New("Permssion Denied: Not Bot Owner")
 	}
 	s.Say(":skull:")
-	d.Logout()
 	os.Exit(0)
 	return nil
 }
 
-func NewKill(args string) *Kill {
+func NewKill() *Kill {
 	this := new(Kill)
 	return this
 }

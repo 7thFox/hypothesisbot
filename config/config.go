@@ -6,14 +6,19 @@ import (
 	"os"
 	"time"
 
+	"github.com/7thFox/hypothesisbot/command"
 	"github.com/7thFox/hypothesisbot/database"
 	"github.com/7thFox/hypothesisbot/log"
 )
+
+const version = "0.01.00"
 
 type Config struct {
 	json configJSON
 
 	db database.Database
+
+	cmds map[string]command.Command
 
 	lgr           *log.MultiLogger
 	lgrHasSession bool
@@ -21,6 +26,7 @@ type Config struct {
 	StartTime time.Time
 	Debug     bool
 	token     string
+	Version   string
 }
 
 type configJSON struct {
@@ -69,6 +75,7 @@ func NewConfig(path string, d bool) *Config {
 
 	cfg.Debug = d
 	cfg.StartTime = time.Now()
+	cfg.Version = version
 
 	return &cfg
 }

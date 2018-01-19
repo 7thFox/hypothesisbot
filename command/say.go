@@ -2,21 +2,25 @@ package command
 
 import (
 	"github.com/7thFox/hypothesisbot/sender"
-	"github.com/bwmarrin/discordgo"
 )
 
 // Say repeats text back into chat
 type Say struct {
-	msg string
 }
 
-func (sy Say) Execute(s sender.Sender, d *discordgo.Session) error {
+func (c Say) Name() string {
+	return "say"
+}
+func (c Say) HelpText() string {
+	return "Repeats back text"
+}
+
+func (sy Say) Execute(s sender.Sender, args string) error {
 	s.DeleteCommand()
-	return s.Say(sy.msg)
+	return s.Say(args)
 }
 
-func NewSay(args string) *Say {
+func NewSay() *Say {
 	this := new(Say)
-	this.msg = args
 	return this
 }

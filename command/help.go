@@ -2,7 +2,6 @@ package command
 
 import (
 	"github.com/7thFox/hypothesisbot/sender"
-	"github.com/bwmarrin/discordgo"
 )
 
 // Help opens help menus about the commands
@@ -12,11 +11,19 @@ type Help struct {
 	menutree []sender.MenuOption
 }
 
-func (c Help) Execute(s sender.Sender, d *discordgo.Session) error {
+func (c Help) Name() string {
+	return "help"
+}
+
+func (c Help) HelpText() string {
+	return "This menu, dummy"
+}
+
+func (c Help) Execute(s sender.Sender, args string) error {
 	return s.Menu(c.title, c.desc, c.menutree)
 }
 
-func NewHelp(args string) *Help {
+func NewHelp() *Help {
 	c := new(Help)
 	c.title = "Help Menu"
 	c.desc = "Currently just a test of the menu feature. Sorry, no help for you."

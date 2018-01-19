@@ -4,13 +4,19 @@ import (
 	"time"
 
 	"github.com/7thFox/hypothesisbot/sender"
-	"github.com/bwmarrin/discordgo"
 )
 
 type Doot struct {
 }
 
-func (c Doot) Execute(s sender.Sender, d *discordgo.Session) error {
+func (c Doot) Name() string {
+	return "doot"
+}
+func (c Doot) HelpText() string {
+	return "Provides calcium"
+}
+
+func (c Doot) Execute(s sender.Sender, args string) error {
 	msg := make(chan string, 10)
 	exit := make(chan int)
 	go s.Update(msg, exit)
@@ -23,7 +29,7 @@ func (c Doot) Execute(s sender.Sender, d *discordgo.Session) error {
 	return nil
 }
 
-func NewDoot(args string) *Doot {
+func NewDoot() *Doot {
 	this := new(Doot)
 	return this
 }

@@ -2,17 +2,24 @@ package command
 
 import (
 	"github.com/7thFox/hypothesisbot/sender"
-	"github.com/bwmarrin/discordgo"
 )
 
 type Git struct {
 }
 
-func (t Git) Execute(s sender.Sender, d *discordgo.Session) error {
+func (c Git) Name() string {
+	return "git"
+}
+
+func (c Git) HelpText() string {
+	return "Provides the link to where you can see the source of this great project"
+}
+
+func (c Git) Execute(s sender.Sender, args string) error {
 	return s.Say("Source code can be found at https://github.com/7thFox/hypothesisbot")
 }
 
-func NewGit(args string) *Git {
-	this := new(Git)
-	return this
+func NewGit() *Git {
+	c := new(Git)
+	return c
 }

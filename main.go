@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/7thFox/hypothesisbot/command"
 	"github.com/7thFox/hypothesisbot/config"
 	"github.com/7thFox/hypothesisbot/log"
 	"github.com/7thFox/hypothesisbot/sender"
@@ -106,12 +105,25 @@ func handleError(err error) {
 	}
 }
 
-func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
-	sender := sender.NewSender(s, m, lgr)
-	cfg.Database().LogMessage(m.Message)
+func isCmd(m string) bool {
+	return strings.HasPrefix(m, cfg.Prefix())
+}
 
-	cmd, _ := command.ParseCommand(m, cfg.Prefix(), *debugMode)
-	if cmd != nil {
-		(*cmd).Execute(*sender, s)
+func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
+	cfg.Database().LogMessage(m.Message)
+	if !isCmd(m.Content) {
+		return
+	}
+
+	str := strings.SplitN(m.Content, " ", 2)
+	str[0] = strings.TrimPrefix(str[0], cfg.Prefix())
+
+	if cmd := cfg.Commands()[str[0]]; cmd != nil {
+		sender := sender.NewSender(s, m, lgr)
+		if len(str) > 1 {
+			cmd.Execute(*sender, str[1])
+		} else {
+			cmd.Execute(*sender, "")
+		}
 	}
 }
