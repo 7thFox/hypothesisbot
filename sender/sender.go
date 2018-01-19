@@ -26,6 +26,3 @@ func NewSender(s *discordgo.Session, m *discordgo.MessageCreate, l log.Logger) *
 
 	return this
 }
-
-// func (this Sender) Menu(title string, desc string, options []MenuOption) error { ... }
-// func (this Sender) Whisper(msg string) error { ... }
