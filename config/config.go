@@ -18,7 +18,8 @@ type Config struct {
 
 	db database.Database
 
-	cmds map[string]command.Command
+	blacklistMap map[string]bool
+	cmds         map[string]command.Command
 
 	lgr           *log.MultiLogger
 	lgrHasSession bool
@@ -44,6 +45,7 @@ type configJSON struct {
 			ChannelID string `json:"channel"`
 			Dbname    string `json:"db"`
 		} `json:"log"`
+		CmdBlacklist []string `json:"commandBlacklist"`
 	} `json:"global"`
 	Debug struct {
 		TokenPath  string   `json:"token"`
@@ -60,6 +62,7 @@ type configJSON struct {
 			ChannelID string `json:"channel"`
 			Dbname    string `json:"db"`
 		} `json:"log"`
+		CmdBlacklist []string `json:"commandBlacklist"`
 	} `json:"debug"`
 }
 

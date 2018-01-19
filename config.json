@@ -14,7 +14,9 @@
         "log": {
             "console": true,
             "db": ""
-        }
+        },
+        "commandBlacklist": [
+        ]
     }, 
     "debug": {
         "token": "./token.debug",
@@ -27,6 +29,9 @@
         },
         "log": {
             "console": true
-        }
+        },
+        "commandBlacklist": [
+            "test"
+        ]
     }
 }
