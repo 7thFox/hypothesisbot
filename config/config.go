@@ -11,7 +11,7 @@ import (
 	"github.com/7thFox/hypothesisbot/log"
 )
 
-const version = "0.01.00"
+const version = "0.02.00"
 
 type Config struct {
 	json configJSON

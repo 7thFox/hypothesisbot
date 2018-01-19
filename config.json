@@ -29,9 +29,6 @@
         },
         "log": {
             "console": true
-        },
-        "commandBlacklist": [
-            "test"
-        ]
+        }
     }
 }
