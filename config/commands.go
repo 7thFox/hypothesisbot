@@ -16,6 +16,7 @@ func (c *Config) Commands() map[string]command.Command {
 			command.NewNoot(),
 			command.NewSay(),
 			command.NewTest(),
+			command.NewVersion(c.Version),
 		}
 		for _, cmd := range cmds {
 			c.cmds[cmd.Name()] = cmd
