@@ -1,42 +1,20 @@
 package config
 
-import (
-	"fmt"
-	"os/exec"
-
-	"github.com/7thFox/hypothesisbot/src/database"
-)
-
-func (c *Config) Database() database.Database {
-	if c.db == nil {
-		c.Logger(nil).Log(fmt.Sprintf("Connecting to DB...\nHost: %s, Name: %s Type: %s", c.dbHost(), c.dbName(), c.dbType()))
-		db, err := database.NewDatabase(c.dbType(), c.dbHost(), c.dbName())
-		if err != nil {
-			c.Logger(nil).Log(fmt.Sprintf("Error getting database: %s", err.Error()))
-			out, _ := exec.Command("ping", c.dbHost(), "-c 5", "-w 10").Output()
-			c.Logger(nil).Log(string(out))
-			return nil
-		}
-		c.Logger(nil).Log("DB Connected")
-		c.db = db.(database.Database)
-	}
-	return c.db
-}
-
-func (c *Config) dbName() string {
+func (c *Config) DatabaseName() string {
 	if c.Debug && c.json.Debug.Database.Dbname != "" {
 		return c.json.Debug.Database.Dbname
 	}
 	return c.json.Global.Database.Dbname
 }
 
-func (c *Config) dbType() string {
+func (c *Config) DatabaseType() string {
 	if c.Debug && c.json.Debug.Database.Dbtype != "" {
 		return c.json.Debug.Database.Dbtype
 	}
 	return c.json.Global.Database.Dbtype
 }
-func (c *Config) dbHost() string {
+
+func (c *Config) DatabaseHost() string {
 	if c.Debug && c.json.Debug.Database.Host != "" {
 		return c.json.Debug.Database.Host
 	}

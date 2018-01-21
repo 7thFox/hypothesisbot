@@ -16,8 +16,9 @@ type Database interface {
 	NewestMessagesBefore(time.Time) (map[string]string, error)
 }
 
-func NewDatabase(t string, host string, name string) (interface{}, error) {
-	if t == "mongo" {
+func NewDatabase(dbtype string, host string, name string) (Database, error) {
+	switch dbtype {
+	case "mongo":
 		return mongo.NewMongo(host, name)
 	}
 	return nil, errors.New("Unsupported Database type")

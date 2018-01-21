@@ -7,9 +7,10 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
-	"time"
 
+	"github.com/7thFox/hypothesisbot/src/command"
 	"github.com/7thFox/hypothesisbot/src/config"
+	"github.com/7thFox/hypothesisbot/src/database"
 	"github.com/7thFox/hypothesisbot/src/log"
 	"github.com/7thFox/hypothesisbot/src/sender"
 	"github.com/7thFox/hypothesisbot/src/startup"
@@ -20,84 +21,49 @@ import (
 
 /************  Startup Flags  ************/
 var debugMode = flag.Bool("debug", false, "run in debug mode with debug settings")
-var slog = flag.String("slog", "", "log all channels of given server")
-var cpurge = flag.String("cpurge", "", "purges channels from given server(s) after given date (yyyy-mm-dd)")
-var cpurgelist = flag.String("cpurgelist", "", "lists purge canidate channels from given server(s) after given date (yyyy-mm-dd)")
 var configPath = flag.String("config", "./config.json", "set location of config file")
 
 var cfg *config.Config
-var lgr log.Logger
+var logr log.Logger
+var db database.Database
+var cmds map[string]command.Command
 
 func main() {
+	var err error
 	flag.Parse()
-	cfg = config.NewConfig(*configPath, *debugMode)
-	discord, err := discordgo.New("Bot " + cfg.Token())
+	fmt.Printf("Loading config from %s\n", *configPath)
+	cfg, err = config.NewConfig(*configPath, *debugMode)
 	handleError(err)
+	fmt.Println("Config loaded")
 
-	handleError(discord.Open())
-	defer discord.Close()
+	fmt.Printf("Connecting to %s db at %s.%s\n", cfg.DatabaseType(), cfg.DatabaseHost(), cfg.DatabaseName())
+	db, err = database.NewDatabase(cfg.DatabaseType(), cfg.DatabaseHost(), cfg.DatabaseName())
+	handleError(err)
+	fmt.Println("DB connected")
 
-	lgr = cfg.Logger(discord)
-	lgr.Log("Connected")
-	cfg.Database() // Initialize the DB now instead of later
+	fmt.Println("Creating session")
+	session, err := discordgo.New("Bot " + cfg.Token())
+	handleError(err)
+	handleError(session.Open())
+	defer session.Close()
 
+	fmt.Println("Creating logger")
+	logr = makeLogger(session)
+
+	logr.Log("Connected")
 	if *debugMode {
-		lgr.Log("Debug Mode Enabled")
+		logr.Log("Debug mode enabled")
 	}
 
 	go web.StartWeb()
 
-	startupTasks(discord)
+	cmds = commands()
+	session.AddHandler(messageHandler)
+	startup.LogServerFast(cfg.LogServers(), cfg.StartTime, session, db, logr)
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
-}
-
-func startupTasks(d *discordgo.Session) {
-	if *slog != "" {
-		startup.ServerLog(*slog, d, cfg.Database(), lgr)
-		d.Close()
-		os.Exit(0)
-	}
-
-	if *cpurgelist != "" {
-		args := strings.Split(*cpurgelist, " ")
-		if len(args) < 2 {
-			handleError(fmt.Errorf("cpurgelist: Expected 2+ args. Got %d", len(args)))
-		}
-		t, err := time.Parse("2006-01-02", args[len(args)-1])
-		handleError(err)
-
-		for _, sid := range args[:len(args)-1] {
-			handleError(startup.ChannelPurgeList(sid, t, d, lgr))
-		}
-
-		lgr.Log("End of purge canidates")
-		d.Close()
-		os.Exit(0)
-	}
-
-	if *cpurge != "" {
-		args := strings.Split(*cpurge, " ")
-		if len(args) < 2 {
-			handleError(fmt.Errorf("cpurge: Expected 2+ args. Got %d", len(args)))
-		}
-		t, err := time.Parse("2006-01-02", args[len(args)-1])
-		handleError(err)
-
-		for _, sid := range args[:len(args)-1] {
-			handleError(startup.ChannelPurge(sid, t, d, lgr))
-		}
-
-		lgr.Log("End of channel purge")
-		d.Close()
-		os.Exit(0)
-	}
-
-	d.AddHandler(messageHandler)
-	startup.LogServerFast(cfg.LogServers(), cfg.StartTime, d, cfg.Database(), lgr)
-	lgr.Log("Finished startup")
 }
 
 func handleError(err error) {
@@ -111,8 +77,51 @@ func isCmd(m string) bool {
 	return strings.HasPrefix(m, cfg.Prefix())
 }
 
+func makeLogger(session *discordgo.Session) log.Logger {
+	lgr := log.NewMultiLogger()
+
+	if cfg.LogConsole() {
+		lgr.Attach(log.NewConsoleLogger())
+	}
+
+	if n := cfg.LogDbName(); n != "" {
+		// TODO
+	}
+
+	if cfg.LogChannelID() != "" {
+		lgr.Attach(log.NewChannelLogger(session, cfg.LogChannelID()))
+	}
+
+	return lgr
+}
+
+func commands() map[string]command.Command {
+	cmdsAll := []command.Command{
+		command.NewDoot(),
+		command.NewGit(),
+		command.NewHoot(),
+		command.NewKill(),
+		command.NewNoot(),
+		command.NewSay(),
+		command.NewTest(),
+		command.NewVersion(cfg.Version),
+	}
+
+	cmdsAll = append(cmdsAll, command.NewHelp(cmdsAll))
+
+	// read config and construct commands
+	cmds := map[string]command.Command{}
+	for _, cmd := range cmdsAll {
+		if !cfg.CommandBlacklist()[cmd.Name()] {
+			cmds[cmd.Name()] = cmd
+		}
+	}
+
+	return cmds
+}
+
 func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
-	cfg.Database().LogMessage(m.Message)
+	db.LogMessage(m.Message)
 	if !isCmd(m.Content) {
 		return
 	}
@@ -120,8 +129,8 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	str := strings.SplitN(m.Content, " ", 2)
 	str[0] = strings.TrimPrefix(str[0], cfg.Prefix())
 
-	if cmd := cfg.Commands()[str[0]]; cmd != nil {
-		sender := sender.NewSender(s, m, lgr)
+	if cmd := cmds[str[0]]; cmd != nil {
+		sender := sender.NewSender(s, m, logr)
 		if len(str) > 1 {
 			cmd.Execute(*sender, str[1])
 		} else {
