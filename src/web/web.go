@@ -1,7 +1,6 @@
 package web
 
 import (
-	"io/ioutil"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -15,10 +14,13 @@ func getIndex() {
 
 func StartWeb() error {
 	r := chi.NewRouter()
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		if file, err := ioutil.ReadFile(indexPath); err == nil {
-			w.Write(file)
-		}
+	fs := http.StripPrefix("/", http.FileServer(http.Dir("./bot-web/dist")))
+	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
+		fs.ServeHTTP(w, r)
 	})
-	return http.ListenAndServe(":8888", r)
+	r.Get("/api", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Foobar"))
+	})
+
+	return http.ListenAndServe(":8080", r)
 }
