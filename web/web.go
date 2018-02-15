@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"runtime"
@@ -25,6 +26,7 @@ func StartWeb(d database.Database) error {
 	basepath := filepath.Dir(b)
 	fs := http.StripPrefix("/ctl/", http.FileServer(http.Dir(basepath+"/static/public")))
 	r.Get("/ctl/*", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Printf("tried serving from %s/static/public", basepath)
 		fs.ServeHTTP(w, r)
 	})
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
