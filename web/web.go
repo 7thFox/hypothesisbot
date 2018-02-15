@@ -23,6 +23,9 @@ func StartWeb(d database.Database) error {
 	r.Get("/ctl/*", func(w http.ResponseWriter, r *http.Request) {
 		fs.ServeHTTP(w, r)
 	})
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Hypothesis Bot Control"))
+	})
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/msgcount", MsgCount)
 	})
