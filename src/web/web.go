@@ -3,6 +3,8 @@ package web
 import (
 	"net/http"
 
+	"github.com/7thFox/hypothesisbot/src/database"
+
 	"github.com/go-chi/chi"
 )
 
@@ -12,14 +14,17 @@ func getIndex() {
 
 }
 
-func StartWeb() error {
+var db *database.Database
+
+func StartWeb(d database.Database) error {
+	db = &d
 	r := chi.NewRouter()
-	fs := http.StripPrefix("/", http.FileServer(http.Dir("./bot-web/dist")))
-	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
+	fs := http.StripPrefix("/ctl/", http.FileServer(http.Dir("./bot-web/public")))
+	r.Get("/ctl/chart", func(w http.ResponseWriter, r *http.Request) {
 		fs.ServeHTTP(w, r)
 	})
-	r.Get("/api", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Foobar"))
+	r.Route("/api", func(r chi.Router) {
+		r.Route("/msgcount", MsgCount)
 	})
 
 	return http.ListenAndServe(":8080", r)

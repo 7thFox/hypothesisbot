@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <title>Stark Control</title>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.11.0/chartist.min.css">
+    </head>
+    <body>
+        <div class="ct-chart"></div>
+    </body>
+    <script>
+        document.getElementsByClassName("ct-chart")[0].innerHTML = "Loading...";
+        ctType = (new URL(window.location.href)).searchParams.get("t")
+        axios.get('/api/msgcount/'+ctType)
+            .then(function (response) {
+                document.getElementsByClassName("ct-chart")[0].innerHTML = "";
+                var l = []
+                var s = []
+                response.data.forEach(function (value, i) {
+                    if (Object.keys(value["_id"]).length > 1) {
+                        console.log(Object.keys(value["_id"]).length)
+                        l[i] = (value["_id"])[Object.keys(value["_id"])[0]] + " " + (value["_id"])[Object.keys(value["_id"])[1]];
+                    } else {
+                        l[i] = value["_id"]
+                    }
+                    s[i] = value[Object.keys(value)[1]]
+                });
+                
+                new Chartist.Bar('.ct-chart', {
+                        labels: l,
+                        series: [s]
+                    }, {
+                        seriesBarDistance: 10,
+                        reverseData: true,
+                        horizontalBars: true,
+                        axisY: {
+                            offset: 70
+                        }
+                    }
+                );
+              
+            })
+            .catch(function (error) {
+                document.getElementsByClassName("ct-chart")[0].innerHTML = "Failed";
+                console.log(error);
+            });
+    </script>
+</html>
