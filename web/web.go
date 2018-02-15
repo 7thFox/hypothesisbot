@@ -2,6 +2,8 @@ package web
 
 import (
 	"net/http"
+	"path/filepath"
+	"runtime"
 
 	"github.com/7thFox/hypothesisbot/database"
 
@@ -19,7 +21,9 @@ var db *database.Database
 func StartWeb(d database.Database) error {
 	db = &d
 	r := chi.NewRouter()
-	fs := http.StripPrefix("/ctl/", http.FileServer(http.Dir("./static/public")))
+	_, b, _, _ := runtime.Caller(0)
+	basepath := filepath.Dir(b)
+	fs := http.StripPrefix("/ctl/", http.FileServer(http.Dir(basepath+"/static/public")))
 	r.Get("/ctl/*", func(w http.ResponseWriter, r *http.Request) {
 		fs.ServeHTTP(w, r)
 	})
