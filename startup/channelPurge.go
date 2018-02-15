@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/7thFox/hypothesisbot/src/log"
+	"github.com/7thFox/hypothesisbot/log"
 	"github.com/bwmarrin/discordgo"
 )
 

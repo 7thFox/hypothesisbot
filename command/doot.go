@@ -3,7 +3,7 @@ package command
 import (
 	"time"
 
-	"github.com/7thFox/hypothesisbot/src/sender"
+	"github.com/7thFox/hypothesisbot/sender"
 )
 
 type Doot struct {

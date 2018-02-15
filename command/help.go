@@ -3,7 +3,7 @@ package command
 import (
 	"fmt"
 
-	"github.com/7thFox/hypothesisbot/src/sender"
+	"github.com/7thFox/hypothesisbot/sender"
 )
 
 // Help opens help menus about the commands

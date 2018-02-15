@@ -9,14 +9,14 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/7thFox/hypothesisbot/src/command"
-	"github.com/7thFox/hypothesisbot/src/config"
-	"github.com/7thFox/hypothesisbot/src/database"
-	"github.com/7thFox/hypothesisbot/src/database/mongo"
-	"github.com/7thFox/hypothesisbot/src/log"
-	"github.com/7thFox/hypothesisbot/src/sender"
-	"github.com/7thFox/hypothesisbot/src/startup"
-	"github.com/7thFox/hypothesisbot/src/web"
+	"github.com/7thFox/hypothesisbot/command"
+	"github.com/7thFox/hypothesisbot/config"
+	"github.com/7thFox/hypothesisbot/database"
+	"github.com/7thFox/hypothesisbot/database/mongo"
+	"github.com/7thFox/hypothesisbot/log"
+	"github.com/7thFox/hypothesisbot/sender"
+	"github.com/7thFox/hypothesisbot/startup"
+	"github.com/7thFox/hypothesisbot/web"
 
 	"github.com/bwmarrin/discordgo"
 )

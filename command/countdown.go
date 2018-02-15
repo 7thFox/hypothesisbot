@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/7thFox/hypothesisbot/src/sender"
+	"github.com/7thFox/hypothesisbot/sender"
 )
 
 // Countdown updates the message counting down from a number

@@ -3,7 +3,7 @@ package web
 import (
 	"net/http"
 
-	"github.com/7thFox/hypothesisbot/src/database"
+	"github.com/7thFox/hypothesisbot/database"
 
 	"github.com/go-chi/chi"
 )
@@ -19,8 +19,8 @@ var db *database.Database
 func StartWeb(d database.Database) error {
 	db = &d
 	r := chi.NewRouter()
-	fs := http.StripPrefix("/ctl/", http.FileServer(http.Dir("./bot-web/public")))
-	r.Get("/ctl/chart", func(w http.ResponseWriter, r *http.Request) {
+	fs := http.StripPrefix("/ctl/", http.FileServer(http.Dir("./static/public")))
+	r.Get("/ctl/*", func(w http.ResponseWriter, r *http.Request) {
 		fs.ServeHTTP(w, r)
 	})
 	r.Route("/api", func(r chi.Router) {
