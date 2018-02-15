@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/7thFox/hypothesisbot/sender"
+	"github.com/7thFox/hypothesisbot/src/sender"
 )
 
 type Command interface {

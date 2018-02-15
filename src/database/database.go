@@ -1,25 +1,18 @@
 package database
 
 import (
-	"errors"
 	"time"
 
-	"github.com/7thFox/hypothesisbot/database/mongo"
 	"github.com/bwmarrin/discordgo"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type Database interface {
+	MsgCount(by string, aggregate bool) ([]bson.M, error)
+
 	LogMessage(m *discordgo.Message) error
 	IsLogged(mid string) bool
 	OldestMessageInChannel(cid string) (*discordgo.Message, error)
 	NewestMessageInChannel(cid string) (*discordgo.Message, error)
 	NewestMessagesBefore(time.Time) (map[string]string, error)
-}
-
-func NewDatabase(dbtype string, host string, name string) (Database, error) {
-	switch dbtype {
-	case "mongo":
-		return mongo.NewMongo(host, name)
-	}
-	return nil, errors.New("Unsupported Database type")
 }

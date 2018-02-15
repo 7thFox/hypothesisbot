@@ -3,9 +3,9 @@ package startup
 import (
 	"strings"
 
-	"github.com/7thFox/hypothesisbot/database"
+	"github.com/7thFox/hypothesisbot/src/database"
 
-	"github.com/7thFox/hypothesisbot/log"
+	"github.com/7thFox/hypothesisbot/src/log"
 	"github.com/bwmarrin/discordgo"
 )
 

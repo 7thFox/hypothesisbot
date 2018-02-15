@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -8,13 +9,14 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/7thFox/hypothesisbot/command"
-	"github.com/7thFox/hypothesisbot/database"
-	"github.com/7thFox/hypothesisbot/log"
-	"github.com/7thFox/hypothesisbot/sender"
-
-	"github.com/7thFox/hypothesisbot/config"
-	"github.com/7thFox/hypothesisbot/startup"
+	"github.com/7thFox/hypothesisbot/src/command"
+	"github.com/7thFox/hypothesisbot/src/config"
+	"github.com/7thFox/hypothesisbot/src/database"
+	"github.com/7thFox/hypothesisbot/src/database/mongo"
+	"github.com/7thFox/hypothesisbot/src/log"
+	"github.com/7thFox/hypothesisbot/src/sender"
+	"github.com/7thFox/hypothesisbot/src/startup"
+	"github.com/7thFox/hypothesisbot/src/web"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -36,10 +38,8 @@ func main() {
 	handleError(err)
 	fmt.Println("Config loaded")
 
-	fmt.Printf("Connecting to %s db at %s.%s\n", cfg.DatabaseType(), cfg.DatabaseHost(), cfg.DatabaseName())
-	db, err = database.NewDatabase(cfg.DatabaseType(), cfg.DatabaseHost(), cfg.DatabaseName())
+	db, err = makeDatabase()
 	handleError(err)
-	fmt.Println("DB connected")
 
 	fmt.Println("Creating session")
 	session, err := discordgo.New("Bot " + cfg.Token())
@@ -54,6 +54,8 @@ func main() {
 	if *debugMode {
 		logr.Log("Debug mode enabled")
 	}
+
+	go web.StartWeb(db)
 
 	cmds = commands()
 	session.AddHandler(messageHandler)
@@ -73,6 +75,16 @@ func handleError(err error) {
 
 func isCmd(m string) bool {
 	return strings.HasPrefix(m, cfg.Prefix())
+}
+
+func makeDatabase() (database.Database, error) {
+	fmt.Printf("Connecting to %s db at %s.%s\n", cfg.DatabaseType(), cfg.DatabaseHost(), cfg.DatabaseName())
+	switch cfg.DatabaseType() {
+	case "mongo":
+		fmt.Println("Mongo DB connected")
+		return mongo.NewMongo(cfg.DatabaseHost(), cfg.DatabaseName())
+	}
+	return nil, errors.New("Unsupported Database type")
 }
 
 func makeLogger(session *discordgo.Session) log.Logger {
