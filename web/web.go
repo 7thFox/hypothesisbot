@@ -24,6 +24,8 @@ func StartWeb(d database.Database) error {
 	r := chi.NewRouter()
 	_, b, _, _ := runtime.Caller(0)
 	basepath := filepath.Dir(b)
+	basepath = basepath[:len(basepath)-4]
+	fmt.Println(basepath + "/static/public")
 	fs := http.StripPrefix("/ctl/", http.FileServer(http.Dir(basepath+"/static/public")))
 	r.Get("/ctl/*", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("tried serving from %s/static/public", basepath)
