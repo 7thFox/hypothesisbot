@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const version = "0.02.00"
+const version = "0.03.00"
 
 type Config struct {
 	StartTime time.Time
