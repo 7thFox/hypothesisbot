@@ -8,14 +8,12 @@ func (m *Mongo) MsgCount(by string, aggregate bool) ([]bson.M, error) {
 	var id bson.M
 	var sort bson.M
 	if aggregate {
-		id = bson.M{
-			"$" + by: bson.M{"$dateFromString": bson.M{"dateString": "$timestamp", "timezone": "+00"}},
-		}
+		id = bson.M{"$" + by: "$timestamp"}
 		sort = bson.M{"_id": 1}
 	} else {
 		id = bson.M{
-			"year": bson.M{"$year": bson.M{"$dateFromString": bson.M{"dateString": "$timestamp", "timezone": "+00"}}},
-			by:     bson.M{"$" + by: bson.M{"$dateFromString": bson.M{"dateString": "$timestamp", "timezone": "+00"}}},
+			"year": bson.M{"$year": "$timestamp"},
+			by:     bson.M{"$" + by: "$timestamp"},
 		}
 		sort = bson.M{"_id.year": 1, "_id." + by: 1}
 	}
