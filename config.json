@@ -24,7 +24,7 @@
         "db": {
             "type": "mongo",
             "host": "localhost",
-            "dbname": "hypothesis_bot_debug",
+            "dbname": "hypothesis_bot",
             "copyprod": false
         },
         "log": {
