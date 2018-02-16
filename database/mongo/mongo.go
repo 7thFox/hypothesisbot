@@ -19,5 +19,16 @@ func NewMongo(host string, name string) (*Mongo, error) {
 	s.session = session
 	s.db = s.session.DB(name)
 	s.messages = s.db.C("messages")
+	s.addNeededIndexes()
 	return &s, nil
+}
+
+func (m *Mongo) addNeededIndexes() {
+	m.messages.EnsureIndex(mgo.Index{
+		Key:        []string{"timestamp"},
+		Unique:     false,
+		DropDups:   false,
+		Background: true,
+		Sparse:     false,
+	})
 }
