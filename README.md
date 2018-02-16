@@ -59,6 +59,20 @@ docker run -dit -v $(pwd)/mongo-data:/data/db --name hypo-mongo --network=hypo-n
 docker run -dit -v $(pwd)/config:/data --network=hypo-net --net-alias=bot --name hypobot --publish 42968:8080 --restart always 7thfox/hypothesisbot
 ```
 
+## Running without docker
+
+Admittedly, this requires fewer steps than above, but I'd only recommend it for dev builds. 
+
+```
+git clone github.com/7thFox/hypothesisbot
+cd hypothesisbot
+# Have a local version of mongo running; set host in config to "localhost"
+# Edit your config.json and add token(s)
+go run main.go -debug
+```
+
+
+
 ## Upgrading
 
 Comming soon:tm:
