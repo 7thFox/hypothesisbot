@@ -13,9 +13,10 @@ docker pull 7thfox/hypothesisbot
 
 Next we'll create the configs:
 
-```mkdir config
-touch token
-touch config.json
+```
+mkdir config
+touch config/token
+touch config/config.json
 ```
 
 Within `token` you should place your token. `config.json` can have whatever setting you wish
